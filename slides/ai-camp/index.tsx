@@ -1,6 +1,6 @@
-import React, { type CSSProperties, type ReactNode } from 'react';
+import React, { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import type { DesignSystem, Page, SlideMeta, SlideTransition } from '@open-slide/core';
-import { Step, Steps } from '@open-slide/core';
+import { ImagePlaceholder, Step, Steps, useIsActivePage } from '@open-slide/core';
 import {
   Globe,
   Terminal,
@@ -42,6 +42,32 @@ import {
   Code,
   Send,
   Inbox,
+  Shirt,
+  Share2,
+  MessageSquareCode,
+  Wand2,
+  User,
+  FileCode,
+  Paperclip,
+  Heart,
+  Bookmark,
+  Radio,
+  MousePointerClick,
+  LayoutGrid,
+  GitBranch,
+  Webhook,
+  FileText,
+  Filter,
+  MessageSquare,
+  Calendar,
+  CreditCard,
+  ShoppingBag,
+  ClipboardList,
+  Grid,
+  MessageCircle,
+  Hash,
+  Code2,
+  type LucideIcon,
 } from 'lucide-react';
 
 import {
@@ -192,17 +218,21 @@ function CampRoadmap({ activeDay }: { activeDay?: string }) {
     { num: '05', title: 'AI Agents & RAG', icon: Bot },
   ];
 
+  const dayTitles: Record<string, string> = {
+    '01': 'AI Leverage, Economics, and Revenue.',
+    '02': 'LLM Mechanics and Prompt Engineering.',
+    '03': 'AI Creation Studio — Brand, Visuals, and Website.',
+    '04': 'Automation Foundations with n8n.',
+    '05': 'AI Agents & RAG Systems.',
+  };
+
   const isMainTitle = !activeDay;
   const tag = isMainTitle
     ? 'AI CAMP // 5-DAY ROADMAP'
     : `DAY ${activeDay} // TOPIC ROADMAP`;
   const title = isMainTitle
     ? 'From Chatting to Building Systems.'
-    : `Day ${activeDay}: ${
-        activeDay === '01'
-          ? 'AI Leverage, Economics, and Revenue.'
-          : 'LLM Mechanics and Prompt Engineering.'
-      }`;
+    : `Day ${activeDay}: ${dayTitles[activeDay] ?? ''}`;
   const subtitle = isMainTitle
     ? 'A 5-day architectural roadmap from prompting to autonomous production.'
     : `Today's mission and position in the 5-day system curriculum.`;
@@ -793,7 +823,73 @@ const Slide7_PhysicalScale: Page = () => {
 };
 
 // Slide 8: Leverage Equation & Iron Triangle
+type TriangleConstraint = 'fast' | 'cheap' | 'good';
+
+function ConstraintButton({
+  label,
+  color,
+  active,
+  onClick,
+  style,
+}: {
+  label: string;
+  color: string;
+  active: boolean;
+  onClick: () => void;
+  style: CSSProperties;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        position: 'absolute',
+        fontFamily: FONTS.mono,
+        fontSize: '13px',
+        fontWeight: 800,
+        letterSpacing: '0.04em',
+        padding: '6px 12px',
+        border: `2px solid ${active ? color : COLORS.BORDER}`,
+        backgroundColor: active ? '#FFFFFF' : COLORS.SURFACE,
+        color: active ? color : COLORS.MUTED,
+        cursor: 'pointer',
+        opacity: active ? 1 : 0.48,
+        transform: active ? 'scale(1.06)' : 'scale(0.94)',
+        boxShadow: active ? `0 6px 16px ${color}24` : 'none',
+        transition:
+          'transform 260ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms ease, border-color 220ms ease, color 220ms ease, background-color 220ms ease, box-shadow 260ms ease',
+        whiteSpace: 'nowrap',
+        zIndex: 2,
+        ...style,
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
 const Slide8_LeverageEquation: Page = () => {
+  const [selected, setSelected] = useState<TriangleConstraint[]>(['fast', 'cheap']);
+  const [aiMode, setAiMode] = useState(false);
+
+  const toggleConstraint = (id: TriangleConstraint) => {
+    if (aiMode) return;
+    setSelected((prev) => {
+      if (prev.includes(id)) {
+        return prev.length > 1 ? prev.filter((item) => item !== id) : prev;
+      }
+      return prev.length >= 2 ? [prev[1], id] : [...prev, id];
+    });
+  };
+
+  const isFast = aiMode || selected.includes('fast');
+  const isCheap = aiMode || selected.includes('cheap');
+  const isGood = aiMode || selected.includes('good');
+
+  const edgeFastCheap = isFast && isCheap;
+  const edgeFastGood = isFast && isGood;
+  const edgeCheapGood = isCheap && isGood;
+
   return (
     <SlideContainer>
       <SlideHeader
@@ -805,61 +901,188 @@ const Slide8_LeverageEquation: Page = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '0.9fr 1.3fr',
+          gridTemplateColumns: '0.95fr 1.25fr',
           gap: '32px',
           alignItems: 'center',
           width: '100%',
         }}
       >
-        {/* Left: The Iron Triangle Diagram */}
+        {/* Left: Interactive Iron Triangle Diagram */}
         <div
           style={{
             backgroundColor: COLORS.SURFACE,
-            border: `1px solid ${COLORS.BORDER}`,
-            padding: '36px',
+            border: `1px solid ${aiMode ? COLORS.ACCENT : COLORS.BORDER}`,
+            padding: '28px 36px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: '440px',
+            height: '480px',
             boxSizing: 'border-box',
+            transition: 'border-color 350ms ease, box-shadow 350ms ease',
+            boxShadow: aiMode ? '0 16px 40px rgba(255, 59, 48, 0.12)' : 'none',
           }}
         >
-          <span style={{ fontFamily: FONTS.mono, fontSize: '14px', fontWeight: 700, color: COLORS.MUTED }}>
-            THE CLASSICAL CONSTRAINT
-          </span>
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontFamily: FONTS.mono, fontSize: '13px', fontWeight: 700, color: aiMode ? COLORS.ACCENT : COLORS.MUTED, transition: 'color 250ms ease' }}>
+              {aiMode ? 'AI MODE // ALL 3 UNLOCKED' : 'CLASSICAL CONSTRAINT // PICK 2'}
+            </span>
 
-          {/* SVG Triangle */}
-          <div style={{ position: 'relative', width: '280px', height: '240px' }}>
-            <svg width="280" height="240" viewBox="0 0 280 240">
+            <button
+              type="button"
+              onClick={() => setAiMode((v) => !v)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                fontFamily: FONTS.mono,
+                fontSize: '13px',
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                cursor: 'pointer',
+                border: `2px solid ${COLORS.ACCENT}`,
+                backgroundColor: aiMode ? COLORS.ACCENT : '#FFFFFF',
+                color: aiMode ? '#FFFFFF' : COLORS.ACCENT,
+                transform: aiMode ? 'scale(1.04)' : 'scale(1)',
+                boxShadow: aiMode ? '0 8px 20px rgba(255, 59, 48, 0.28)' : '0 2px 8px rgba(0, 0, 0, 0.05)',
+                transition: 'transform 220ms cubic-bezier(0.16, 1, 0.3, 1), background-color 220ms ease, color 220ms ease, box-shadow 220ms ease',
+              }}
+            >
+              <Sparkles size={15} />
+              {aiMode ? 'AI: ON' : 'AI'}
+            </button>
+          </div>
+
+          {/* Enlarging SVG Triangle Stage */}
+          <div
+            style={{
+              position: 'relative',
+              width: '320px',
+              height: '260px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transform: aiMode ? 'scale(1.18)' : 'scale(1)',
+              transition: 'transform 520ms cubic-bezier(0.16, 1, 0.3, 1)',
+              willChange: 'transform',
+            }}
+          >
+            <svg width="280" height="240" viewBox="0 0 280 240" style={{ overflow: 'visible' }}>
+              {/* Triangle Fill */}
               <polygon
-                points="140,24 24,206 256,206"
-                fill="#FFFFFF"
-                stroke={COLORS.BORDER}
-                strokeWidth="2"
+                points="140,28 28,204 252,204"
+                fill={aiMode ? '#FFF5F5' : '#FFFFFF'}
+                style={{ transition: 'fill 360ms ease' }}
               />
-              <circle cx="140" cy="24" r="8" fill={COLORS.ACCENT} />
-              <circle cx="24" cy="206" r="8" fill={COLORS.ACCENT_2} />
-              <circle cx="256" cy="206" r="8" fill={COLORS.TEXT} />
+
+              {/* Edge: Fast <-> Cheap */}
+              <line
+                x1="140"
+                y1="28"
+                x2="28"
+                y2="204"
+                stroke={aiMode ? COLORS.ACCENT : edgeFastCheap ? COLORS.TEXT : COLORS.BORDER}
+                strokeWidth={aiMode || edgeFastCheap ? 3.5 : 2}
+                style={{ transition: 'stroke 260ms ease, stroke-width 260ms ease' }}
+              />
+
+              {/* Edge: Fast <-> Good */}
+              <line
+                x1="140"
+                y1="28"
+                x2="252"
+                y2="204"
+                stroke={aiMode ? COLORS.ACCENT : edgeFastGood ? COLORS.TEXT : COLORS.BORDER}
+                strokeWidth={aiMode || edgeFastGood ? 3.5 : 2}
+                style={{ transition: 'stroke 260ms ease, stroke-width 260ms ease' }}
+              />
+
+              {/* Edge: Cheap <-> Good */}
+              <line
+                x1="28"
+                y1="204"
+                x2="252"
+                y2="204"
+                stroke={aiMode ? COLORS.ACCENT : edgeCheapGood ? COLORS.TEXT : COLORS.BORDER}
+                strokeWidth={aiMode || edgeCheapGood ? 3.5 : 2}
+                style={{ transition: 'stroke 260ms ease, stroke-width 260ms ease' }}
+              />
+
+              {/* Vertex Dots */}
+              <circle
+                cx="140"
+                cy="28"
+                r={isFast ? 9 : 6}
+                fill={isFast ? COLORS.ACCENT : COLORS.BORDER}
+                style={{ transition: 'r 240ms ease, fill 240ms ease' }}
+              />
+              <circle
+                cx="28"
+                cy="204"
+                r={isCheap ? 9 : 6}
+                fill={isCheap ? COLORS.ACCENT_2 : COLORS.BORDER}
+                style={{ transition: 'r 240ms ease, fill 240ms ease' }}
+              />
+              <circle
+                cx="252"
+                cy="204"
+                r={isGood ? 9 : 6}
+                fill={isGood ? COLORS.TEXT : COLORS.BORDER}
+                style={{ transition: 'r 240ms ease, fill 240ms ease' }}
+              />
             </svg>
-            <div style={{ position: 'absolute', top: '-6px', left: '160px', fontFamily: FONTS.mono, fontSize: '14px', fontWeight: 800, color: COLORS.ACCENT }}>
-              FAST (TIME)
-            </div>
-            <div style={{ position: 'absolute', bottom: '2px', left: '-20px', fontFamily: FONTS.mono, fontSize: '14px', fontWeight: 800, color: COLORS.ACCENT_2 }}>
-              CHEAP (MONEY)
-            </div>
-            <div style={{ position: 'absolute', bottom: '2px', right: '-14px', fontFamily: FONTS.mono, fontSize: '14px', fontWeight: 800 }}>
-              GOOD (QUALITY)
-            </div>
-            <div style={{ position: 'absolute', top: '110px', left: '85px', textAlign: 'center', width: '110px' }}>
-              <span style={{ fontFamily: FONTS.heading, fontSize: '16px', fontWeight: 800, color: COLORS.ACCENT }}>
+
+            {/* Clickable Constraint Vertices */}
+            <ConstraintButton
+              label="FAST (TIME)"
+              color={COLORS.ACCENT}
+              active={isFast}
+              onClick={() => toggleConstraint('fast')}
+              style={{ top: '-10px', left: '50%', marginLeft: '-62px' }}
+            />
+            <ConstraintButton
+              label="CHEAP (MONEY)"
+              color={COLORS.ACCENT_2}
+              active={isCheap}
+              onClick={() => toggleConstraint('cheap')}
+              style={{ bottom: '4px', left: '-18px' }}
+            />
+            <ConstraintButton
+              label="GOOD (QUALITY)"
+              color={COLORS.TEXT}
+              active={isGood}
+              onClick={() => toggleConstraint('good')}
+              style={{ bottom: '4px', right: '-22px' }}
+            />
+
+            {/* Inner Text — appears when AI enlarges the triangle */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '135px',
+                left: '50%',
+                width: '132px',
+                marginLeft: '-66px',
+                textAlign: 'center',
+                pointerEvents: 'none',
+                opacity: aiMode ? 1 : 0,
+                transform: aiMode ? 'scale(1) translateY(0)' : 'scale(0.86) translateY(6px)',
+                transition: aiMode
+                  ? 'opacity 320ms ease 180ms, transform 360ms cubic-bezier(0.16, 1, 0.3, 1) 180ms'
+                  : 'opacity 160ms ease, transform 180ms ease',
+              }}
+            >
+              <span style={{ fontFamily: FONTS.heading, fontSize: '15px', fontWeight: 800, color: COLORS.ACCENT, lineHeight: 1.2, display: 'block' }}>
                 AI BREAKS THE LIMIT
               </span>
             </div>
           </div>
 
-          <span style={{ fontFamily: FONTS.body, fontSize: '15px', color: COLORS.MUTED, textAlign: 'center' }}>
-            Traditional law: "Pick two." AI pipelines deliver all three simultaneously.
+          <span style={{ fontFamily: FONTS.body, fontSize: '14px', color: COLORS.MUTED, textAlign: 'center' }}>
+            {aiMode
+              ? 'AI pipelines deliver speed, low cost, and quality simultaneously.'
+              : 'Click any constraint to trade off (max 2 active) — or click AI.'}
           </span>
         </div>
 
@@ -1458,8 +1681,167 @@ const Slide14_D2Outcomes: Page = () => {
   );
 };
 
-// Slide 15: Next-Token Prediction
+// Slide 15: Next-Token Prediction (3 words appear together, then bars fill smoothly)
+function PredictionRow({
+  word,
+  pct,
+  color,
+  highlight = false,
+}: {
+  word: string;
+  pct: number;
+  color: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'baseline' }}>
+        <span
+          data-pred-word=""
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: highlight ? '26px' : '22px',
+            fontWeight: highlight ? 800 : 700,
+            color: highlight ? COLORS.TEXT : COLORS.MUTED,
+            willChange: 'transform, opacity',
+          }}
+        >
+          {word}
+        </span>
+        <span
+          data-pred-pct=""
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: highlight ? '26px' : '22px',
+            fontWeight: highlight ? 800 : 600,
+            color,
+            willChange: 'opacity, transform',
+          }}
+        >
+          {pct}%
+        </span>
+      </div>
+      <div
+        style={{
+          height: highlight ? '28px' : '20px',
+          backgroundColor: COLORS.SURFACE,
+          width: '100%',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          data-pred-bar=""
+          style={{
+            height: '100%',
+            width: `${pct}%`,
+            backgroundColor: color,
+            transformOrigin: 'left center',
+            willChange: 'transform',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 const Slide15_NextToken: Page = () => {
+  const isActive = useIsActivePage();
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel || !isActive) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const stepEl = panel.closest('[data-osd-step]') as HTMLElement | null;
+    let activeAnims: Animation[] = [];
+
+    const cancelAll = () => {
+      activeAnims.forEach((a) => a.cancel());
+      activeAnims = [];
+    };
+
+    const play = () => {
+      cancelAll();
+      const words = Array.from(panel.querySelectorAll<HTMLElement>('[data-pred-word]'));
+      const bars = Array.from(panel.querySelectorAll<HTMLElement>('[data-pred-bar]'));
+      const pcts = Array.from(panel.querySelectorAll<HTMLElement>('[data-pred-pct]'));
+
+      // Phase 1: All 3 words appear together
+      words.forEach((word) => {
+        const wAnim = word.animate(
+          [
+            { opacity: 0, transform: 'translate3d(0, 10px, 0)' },
+            { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+          ],
+          {
+            duration: 320,
+            easing: 'cubic-bezier(0, 0, 0.2, 1)',
+            fill: 'both',
+          }
+        );
+        activeAnims.push(wAnim);
+      });
+
+      // Phase 2: Bars fill smoothly to target percentage (GPU scaleX)
+      bars.forEach((bar) => {
+        const bAnim = bar.animate(
+          [
+            { transform: 'scaleX(0)' },
+            { transform: 'scaleX(1)' },
+          ],
+          {
+            duration: 820,
+            delay: 360,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            fill: 'both',
+          }
+        );
+        activeAnims.push(bAnim);
+      });
+
+      // Phase 2b: Percentages fade in with the bars
+      pcts.forEach((pct) => {
+        const pAnim = pct.animate(
+          [
+            { opacity: 0, transform: 'translate3d(-6px, 0, 0)' },
+            { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+          ],
+          {
+            duration: 450,
+            delay: 520,
+            easing: 'cubic-bezier(0, 0, 0.2, 1)',
+            fill: 'both',
+          }
+        );
+        activeAnims.push(pAnim);
+      });
+    };
+
+    if (!stepEl) {
+      play();
+      return cancelAll;
+    }
+
+    if (stepEl.getAttribute('data-osd-step') === 'revealed') {
+      play();
+    }
+
+    const observer = new MutationObserver(() => {
+      if (stepEl.getAttribute('data-osd-step') === 'revealed') {
+        play();
+      } else {
+        cancelAll();
+      }
+    });
+
+    observer.observe(stepEl, { attributes: true, attributeFilter: ['data-osd-step'] });
+    return () => {
+      observer.disconnect();
+      cancelAll();
+    };
+  }, [isActive]);
+
   return (
     <SlideContainer>
       <SlideHeader
@@ -1478,39 +1860,13 @@ const Slide15_NextToken: Page = () => {
           </div>
         </div>
 
-        <div style={{ backgroundColor: '#FFFFFF', border: `1px solid ${COLORS.BORDER}`, padding: '44px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', border: `1px solid ${COLORS.BORDER}`, padding: '44px' }}>
           <Steps>
             <Step>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontFamily: FONTS.heading, fontSize: '26px', fontWeight: 800 }}>Cairo</span>
-                  <span style={{ fontFamily: FONTS.mono, fontSize: '26px', fontWeight: 800, color: COLORS.ACCENT_2 }}>94%</span>
-                </div>
-                <div style={{ height: '28px', backgroundColor: COLORS.SURFACE, width: '100%' }}>
-                  <div style={{ height: '100%', width: '94%', backgroundColor: COLORS.ACCENT_2 }} />
-                </div>
-              </div>
-            </Step>
-            <Step>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontFamily: FONTS.heading, fontSize: '22px', fontWeight: 700, color: COLORS.MUTED }}>Alexandria</span>
-                  <span style={{ fontFamily: FONTS.mono, fontSize: '22px', color: COLORS.MUTED }}>4%</span>
-                </div>
-                <div style={{ height: '20px', backgroundColor: COLORS.SURFACE, width: '100%' }}>
-                  <div style={{ height: '100%', width: '4%', backgroundColor: COLORS.MUTED }} />
-                </div>
-              </div>
-            </Step>
-            <Step>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontFamily: FONTS.heading, fontSize: '22px', fontWeight: 700, color: COLORS.MUTED }}>Pyramids</span>
-                  <span style={{ fontFamily: FONTS.mono, fontSize: '22px', color: COLORS.MUTED }}>2%</span>
-                </div>
-                <div style={{ height: '20px', backgroundColor: COLORS.SURFACE, width: '100%' }}>
-                  <div style={{ height: '100%', width: '2%', backgroundColor: COLORS.MUTED }} />
-                </div>
+              <div ref={panelRef} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <PredictionRow word="Cairo" pct={94} color={COLORS.ACCENT_2} highlight />
+                <PredictionRow word="Alexandria" pct={4} color={COLORS.MUTED} />
+                <PredictionRow word="Pyramids" pct={2} color={COLORS.MUTED} />
               </div>
             </Step>
           </Steps>
@@ -1520,16 +1876,190 @@ const Slide15_NextToken: Page = () => {
   );
 };
 
-// Slide 16: Tokens (Animated: Sentence to Sliced Tokens)
+// Slide 16: Tokens (GPU-composited WAAPI: Sentence copied, then split & float apart)
+const TOKEN_PILLS_META = [
+  { text: 'Hello', num: 'tok_1', col: COLORS.ACCENT, joinX: -62 },
+  { text: ' my', num: 'tok_2', col: COLORS.ACCENT_2, joinX: -244 },
+  { text: ' name', num: 'tok_3', col: '#10B981', joinX: -426 },
+  { text: ' is', num: 'tok_4', col: '#F59E0B', joinX: -608 },
+  { text: ' Ey', num: 'tok_5', col: COLORS.ACCENT, joinX: -814 },
+  { text: 'ad', num: 'tok_6', col: COLORS.ACCENT_2, joinX: -1031 },
+] as const;
+
+function TokenSlice({
+  text,
+  num,
+  col,
+}: {
+  text: string;
+  num: string;
+  col: string;
+}) {
+  return (
+    <div
+      data-tok-card=""
+      style={{
+        flex: 1,
+        position: 'relative',
+        padding: '16px 12px',
+        textAlign: 'center',
+        willChange: 'transform, opacity',
+      }}
+    >
+      {/* Separate box layer so background/border never repaint during transform */}
+      <div
+        data-tok-box=""
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: COLORS.SURFACE,
+          border: `2px solid ${col}`,
+          willChange: 'transform, opacity',
+        }}
+      />
+      <div style={{ position: 'relative' }}>
+        <div
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '36px',
+            fontWeight: 800,
+            color: col,
+            whiteSpace: 'pre',
+          }}
+        >
+          {text}
+        </div>
+        <span
+          data-tok-meta=""
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '12px',
+            color: COLORS.MUTED,
+            marginTop: '4px',
+            display: 'block',
+            willChange: 'opacity, transform',
+          }}
+        >
+          {num}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 const Slide16_Tokens: Page = () => {
-  const tokenPills = [
-    { text: 'Hello', num: 'tok_1', col: COLORS.ACCENT },
-    { text: ' my', num: 'tok_2', col: COLORS.ACCENT_2 },
-    { text: ' name', num: 'tok_3', col: '#10B981' },
-    { text: ' is', num: 'tok_4', col: '#F59E0B' },
-    { text: ' Ey', num: 'tok_5', col: COLORS.ACCENT },
-    { text: 'ad', num: 'tok_6', col: COLORS.ACCENT_2 },
-  ];
+  const isActive = useIsActivePage();
+  const rowRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row || !isActive) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const stepEl = row.closest('[data-osd-step]') as HTMLElement | null;
+    let activeAnims: Animation[] = [];
+
+    const cancelAll = () => {
+      activeAnims.forEach((a) => a.cancel());
+      activeAnims = [];
+    };
+
+    const play = () => {
+      cancelAll();
+      const cards = Array.from(row.querySelectorAll<HTMLElement>('[data-tok-card]'));
+      const boxes = Array.from(row.querySelectorAll<HTMLElement>('[data-tok-box]'));
+      const metas = Array.from(row.querySelectorAll<HTMLElement>('[data-tok-meta]'));
+
+      cards.forEach((card, i) => {
+        const joinX = TOKEN_PILLS_META[i]?.joinX ?? 0;
+
+        // Phase 1: Copy down from Beat 1 as one joined sentence
+        const copyDown = card.animate(
+          [
+            { opacity: 0, transform: `translate3d(${joinX}px, -185px, 0)` },
+            { opacity: 1, transform: `translate3d(${joinX}px, -185px, 0)`, offset: 0.2 },
+            { opacity: 1, transform: `translate3d(${joinX}px, 0px, 0)` },
+          ],
+          {
+            duration: 420,
+            easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+            fill: 'forwards',
+          }
+        );
+
+        // Phase 2: Split & float smoothly into separated token slots (slower ease-out)
+        const splitOut = card.animate(
+          [
+            { transform: `translate3d(${joinX}px, 0px, 0)` },
+            { transform: 'translate3d(0px, 0px, 0)' },
+          ],
+          {
+            duration: 950,
+            delay: 420,
+            easing: 'cubic-bezier(0, 0, 0.2, 1)',
+            fill: 'forwards',
+          }
+        );
+
+        activeAnims.push(copyDown, splitOut);
+      });
+
+      boxes.forEach((box) => {
+        const boxIn = box.animate(
+          [
+            { opacity: 0, transform: 'scale(0.95)' },
+            { opacity: 1, transform: 'scale(1)' },
+          ],
+          {
+            duration: 420,
+            delay: 1320,
+            easing: 'cubic-bezier(0, 0, 0.2, 1)',
+            fill: 'both',
+          }
+        );
+        activeAnims.push(boxIn);
+      });
+
+      metas.forEach((meta) => {
+        const metaIn = meta.animate(
+          [
+            { opacity: 0, transform: 'translate3d(0, 6px, 0)' },
+            { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+          ],
+          {
+            duration: 480,
+            delay: 750,
+            easing: 'cubic-bezier(0, 0, 0.2, 1)',
+            fill: 'both',
+          }
+        );
+        activeAnims.push(metaIn);
+      });
+    };
+
+    if (!stepEl) {
+      play();
+      return cancelAll;
+    }
+
+    if (stepEl.getAttribute('data-osd-step') === 'revealed') {
+      play();
+    }
+
+    const observer = new MutationObserver(() => {
+      if (stepEl.getAttribute('data-osd-step') === 'revealed') {
+        play();
+      } else {
+        cancelAll();
+      }
+    });
+
+    observer.observe(stepEl, { attributes: true, attributeFilter: ['data-osd-step'] });
+    return () => {
+      observer.disconnect();
+      cancelAll();
+    };
+  }, [isActive]);
 
   return (
     <SlideContainer>
@@ -1556,29 +2086,21 @@ const Slide16_Tokens: Page = () => {
           {/* Beat 2: Token sliced blocks */}
           <Step>
             <div style={{ backgroundColor: '#FFFFFF', border: `2px solid ${COLORS.ACCENT}`, padding: '32px 40px', boxShadow: '0 12px 30px rgba(255, 59, 48, 0.08)' }}>
-              <span style={{ fontFamily: FONTS.mono, fontSize: '14px', color: COLORS.ACCENT, fontWeight: 700, display: 'block', marginBottom: '16px' }}>
-                BYTE-PAIR ENCODING (BPE) TOKEN SLICES:
-              </span>
-              <div style={{ display: 'flex', gap: '14px' }}>
-                {tokenPills.map((t) => (
-                  <div
-                    key={t.num}
-                    style={{
-                      flex: 1,
-                      backgroundColor: COLORS.SURFACE,
-                      border: `2px solid ${t.col}`,
-                      padding: '16px 12px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div style={{ fontFamily: FONTS.mono, fontSize: '36px', fontWeight: 800, color: t.col }}>
-                      {t.text}
-                    </div>
-                    <span style={{ fontFamily: FONTS.mono, fontSize: '12px', color: COLORS.MUTED, marginTop: '4px', display: 'block' }}>
-                      {t.num}
-                    </span>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <span style={{ fontFamily: FONTS.mono, fontSize: '14px', color: COLORS.ACCENT, fontWeight: 700 }}>
+                  BYTE-PAIR ENCODING (BPE) TOKEN SLICES:
+                </span>
+                <span style={{ fontFamily: FONTS.mono, fontSize: '12px', color: COLORS.ACCENT, fontWeight: 700, letterSpacing: '0.06em' }}>
+                  "Eyad" → SUB-WORD SPLIT
+                </span>
+              </div>
+              <div ref={rowRef} style={{ display: 'flex', gap: '18px', alignItems: 'stretch' }}>
+                <TokenSlice text="Hello" num="tok_1" col={COLORS.ACCENT} />
+                <TokenSlice text=" my" num="tok_2" col={COLORS.ACCENT_2} />
+                <TokenSlice text=" name" num="tok_3" col="#10B981" />
+                <TokenSlice text=" is" num="tok_4" col="#F59E0B" />
+                <TokenSlice text=" Ey" num="tok_5" col={COLORS.ACCENT} />
+                <TokenSlice text="ad" num="tok_6" col={COLORS.ACCENT_2} />
               </div>
             </div>
           </Step>
@@ -1600,8 +2122,181 @@ const Slide16_Tokens: Page = () => {
   );
 };
 
-// Slide 17: Context Window (Animated: Empty -> Full -> Overflow Drop)
+// Slide 17: Context Window (Real-Time Animated Bar + Live Event Rows)
+type ContextEventItem = {
+  id: string;
+  tag: string;
+  label: string;
+  barLabel: string;
+  tokensK: number;
+  color: string;
+  textColor: string;
+  status: 'IN MEMORY' | 'NEAR LIMIT' | 'OVERFLOW';
+};
+
+const CONTEXT_EVENTS: ContextEventItem[] = [
+  {
+    id: 'sys',
+    tag: '01',
+    label: 'System Rules & Persona Loaded',
+    barLabel: 'SYSTEM RULES',
+    tokensK: 18,
+    color: COLORS.ACCENT_2,
+    textColor: '#FFFFFF',
+    status: 'IN MEMORY',
+  },
+  {
+    id: 'chat1',
+    tag: '02',
+    label: 'Initial Chat Turns (1–3)',
+    barLabel: 'CHAT 1–3',
+    tokensK: 26,
+    color: '#CBD5E1',
+    textColor: COLORS.TEXT,
+    status: 'IN MEMORY',
+  },
+  {
+    id: 'pdf',
+    tag: '03',
+    label: 'Attached PDF Document',
+    barLabel: 'PDF DOC (48K)',
+    tokensK: 48,
+    color: '#6366F1',
+    textColor: '#FFFFFF',
+    status: 'IN MEMORY',
+  },
+  {
+    id: 'chat2',
+    tag: '04',
+    label: 'Extended Chat Turns (4–8)',
+    barLabel: 'CHAT 4–8',
+    tokensK: 28,
+    color: '#94A3B8',
+    textColor: '#FFFFFF',
+    status: 'NEAR LIMIT',
+  },
+  {
+    id: 'new',
+    tag: '05',
+    label: 'New Prompt & Model Output (+24K)',
+    barLabel: 'NEW OUTPUT',
+    tokensK: 24,
+    color: COLORS.ACCENT,
+    textColor: '#FFFFFF',
+    status: 'OVERFLOW',
+  },
+];
+
+const MAX_CONTEXT_K = 128;
+
+function ContextEventRow({
+  item,
+  visible,
+  evicted,
+}: {
+  item: ContextEventItem;
+  visible: boolean;
+  evicted: boolean;
+}) {
+  const badgeColor = evicted
+    ? COLORS.ACCENT
+    : item.status === 'OVERFLOW'
+      ? COLORS.ACCENT
+      : item.status === 'NEAR LIMIT'
+        ? '#D97706'
+        : COLORS.ACCENT_2;
+
+  const badgeText = evicted ? 'DROPPED (FIFO)' : item.status;
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '56px 1fr 120px 170px',
+        alignItems: 'center',
+        gap: '16px',
+        padding: '12px 20px',
+        backgroundColor: evicted ? '#FFF5F5' : '#FFFFFF',
+        border: `1px solid ${evicted ? COLORS.ACCENT : COLORS.BORDER}`,
+        opacity: visible ? (evicted ? 0.65 : 1) : 0,
+        transform: visible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 10px, 0)',
+        transition:
+          'opacity 360ms cubic-bezier(0, 0, 0.2, 1), transform 380ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease, border-color 300ms ease',
+      }}
+    >
+      <span style={{ fontFamily: FONTS.mono, fontSize: '13px', fontWeight: 700, color: COLORS.MUTED }}>
+        #{item.tag}
+      </span>
+      <span
+        style={{
+          fontFamily: FONTS.body,
+          fontSize: '17px',
+          fontWeight: 600,
+          color: evicted ? COLORS.ACCENT : COLORS.TEXT,
+          textDecoration: evicted ? 'line-through' : 'none',
+        }}
+      >
+        {item.label}
+      </span>
+      <span style={{ fontFamily: FONTS.mono, fontSize: '15px', fontWeight: 700, color: COLORS.TEXT, textAlign: 'right' }}>
+        +{item.tokensK}K
+      </span>
+      <span
+        style={{
+          fontFamily: FONTS.mono,
+          fontSize: '12px',
+          fontWeight: 800,
+          color: badgeColor,
+          backgroundColor: `${badgeColor}14`,
+          border: `1px solid ${badgeColor}40`,
+          padding: '5px 10px',
+          textAlign: 'center',
+        }}
+      >
+        {badgeText}
+      </span>
+    </div>
+  );
+}
+
 const Slide17_ContextWindow: Page = () => {
+  const isActive = useIsActivePage();
+  const [stepCount, setStepCount] = useState<number>(isActive ? 0 : CONTEXT_EVENTS.length);
+  const [runId, setRunId] = useState(0);
+
+  useEffect(() => {
+    if (!isActive) {
+      setStepCount(CONTEXT_EVENTS.length);
+      return;
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setStepCount(CONTEXT_EVENTS.length);
+      return;
+    }
+
+    setStepCount(0);
+    const delays = [250, 1150, 2050, 2950, 3950];
+    const timers = delays.map((ms, idx) =>
+      window.setTimeout(() => {
+        setStepCount(idx + 1);
+      }, ms)
+    );
+
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+    };
+  }, [isActive, runId]);
+
+  const activeEvents = CONTEXT_EVENTS.slice(0, stepCount);
+  const rawTotalK = activeEvents.reduce((sum, e) => sum + e.tokensK, 0);
+  const isOverflow = rawTotalK > MAX_CONTEXT_K;
+  const usedK = Math.min(rawTotalK, MAX_CONTEXT_K);
+  const pct = Math.round((usedK / MAX_CONTEXT_K) * 100);
+
+  // When overflow happens, oldest block ('sys', 18K) is evicted from the left
+  const evictedId = isOverflow ? 'sys' : null;
+  const freePct = Math.max(0, 100 - (rawTotalK / MAX_CONTEXT_K) * 100);
+
   return (
     <SlideContainer>
       <SlideHeader
@@ -1610,80 +2305,125 @@ const Slide17_ContextWindow: Page = () => {
         subtitle="When the context window fills, earlier conversation blocks drop out."
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', width: '100%' }}>
-        <Steps>
-          {/* Stage 1: Empty */}
-          <Step>
-            <div style={{ backgroundColor: COLORS.SURFACE, border: `1px solid ${COLORS.BORDER}`, padding: '28px 36px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <span style={{ fontFamily: FONTS.mono, fontSize: '15px', fontWeight: 700 }}>
-                  STAGE 1 // INITIAL PROMPT (15% CAPACITY)
-                </span>
-                <span style={{ fontFamily: FONTS.mono, fontSize: '14px', color: COLORS.MUTED }}>
-                  128,000 TOKENS MAXIMUM
-                </span>
-              </div>
-              <div style={{ display: 'flex', height: '64px', backgroundColor: '#FFFFFF', border: `1px solid ${COLORS.BORDER}` }}>
-                <div style={{ width: '15%', backgroundColor: COLORS.ACCENT_2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontFamily: FONTS.mono, fontSize: '14px', fontWeight: 700 }}>
-                  SYSTEM RULES
-                </div>
-                <div style={{ width: '85%', display: 'flex', alignItems: 'center', paddingLeft: '16px', fontFamily: FONTS.mono, fontSize: '13px', color: COLORS.MUTED }}>
-                  AVAILABLE FREE RAM (85%)
-                </div>
-              </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+        {/* Top: Real-Time Context Bar */}
+        <div
+          style={{
+            backgroundColor: COLORS.SURFACE,
+            border: `2px solid ${isOverflow ? COLORS.ACCENT : COLORS.BORDER}`,
+            padding: '24px 32px',
+            transition: 'border-color 300ms ease',
+            boxShadow: isOverflow ? '0 12px 30px rgba(255, 59, 48, 0.10)' : 'none',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <span style={{ fontFamily: FONTS.mono, fontSize: '15px', fontWeight: 800, color: isOverflow ? COLORS.ACCENT : COLORS.TEXT }}>
+                LIVE MEMORY // {usedK}K / {MAX_CONTEXT_K}K TOKENS ({pct}%)
+              </span>
             </div>
-          </Step>
 
-          {/* Stage 2: Filling */}
-          <Step>
-            <div style={{ backgroundColor: COLORS.SURFACE, border: `1px solid ${COLORS.BORDER}`, padding: '28px 36px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <span style={{ fontFamily: FONTS.mono, fontSize: '15px', fontWeight: 700 }}>
-                  STAGE 2 // ACCUMULATING TURNS (90% CAPACITY)
-                </span>
-                <span style={{ fontFamily: FONTS.mono, fontSize: '14px', color: COLORS.ACCENT }}>
-                  MEMORY NEAR LIMIT
-                </span>
-              </div>
-              <div style={{ display: 'flex', height: '64px', backgroundColor: '#FFFFFF', border: `1px solid ${COLORS.BORDER}` }}>
-                <div style={{ width: '15%', backgroundColor: COLORS.ACCENT_2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontFamily: FONTS.mono, fontSize: '13px', fontWeight: 700 }}>
-                  SYSTEM
-                </div>
-                <div style={{ width: '75%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.mono, fontSize: '13px', fontWeight: 700, color: COLORS.TEXT }}>
-                  LONG CHAT HISTORY & ATTACHED DOCUMENTS
-                </div>
-                <div style={{ width: '10%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.mono, fontSize: '12px', color: COLORS.MUTED }}>
-                  10% FREE
-                </div>
-              </div>
-            </div>
-          </Step>
+            <button
+              type="button"
+              onClick={() => setRunId((n) => n + 1)}
+              style={{
+                fontFamily: FONTS.mono,
+                fontSize: '12px',
+                fontWeight: 800,
+                padding: '6px 14px',
+                border: `1px solid ${COLORS.BORDER}`,
+                backgroundColor: '#FFFFFF',
+                color: COLORS.TEXT,
+                cursor: 'pointer',
+              }}
+            >
+              REPLAY
+            </button>
+          </div>
 
-          {/* Stage 3: Overflow Drop */}
-          <Step>
-            <div style={{ backgroundColor: '#FFFFFF', border: `2px solid ${COLORS.ACCENT}`, padding: '28px 36px', boxShadow: '0 12px 30px rgba(255, 59, 48, 0.08)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <span style={{ fontFamily: FONTS.mono, fontSize: '15px', fontWeight: 800, color: COLORS.ACCENT }}>
-                  STAGE 3 // FIFO OVERFLOW: OLDEST DATA DROPPED
-                </span>
-                <MonoPill color={COLORS.ACCENT} bg="#FFF0EE" border={COLORS.ACCENT}>
-                  MEMORY LOSS
-                </MonoPill>
+          {/* Sliding FIFO Bar */}
+          <div
+            style={{
+              display: 'flex',
+              height: '72px',
+              width: '100%',
+              backgroundColor: '#FFFFFF',
+              border: `1px solid ${COLORS.BORDER}`,
+              overflow: 'hidden',
+            }}
+          >
+            {CONTEXT_EVENTS.map((ev, idx) => {
+              const isAdded = idx < stepCount;
+              const isEvicted = ev.id === evictedId;
+              const targetWidth = !isAdded || isEvicted ? 0 : (ev.tokensK / MAX_CONTEXT_K) * 100;
+
+              return (
+                <div
+                  key={ev.id}
+                  style={{
+                    width: `${targetWidth}%`,
+                    height: '100%',
+                    backgroundColor: ev.color,
+                    color: ev.textColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: FONTS.mono,
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    opacity: !isAdded || isEvicted ? 0 : 1,
+                    borderRight: targetWidth > 0 ? '2px solid #FFFFFF' : 'none',
+                    transition:
+                      'width 650ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease',
+                  }}
+                >
+                  {ev.barLabel}
+                </div>
+              );
+            })}
+
+            {freePct > 0 && (
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  paddingLeft: '16px',
+                  fontFamily: FONTS.mono,
+                  fontSize: '13px',
+                  color: COLORS.MUTED,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                }}
+              >
+                {Math.round(freePct)}% FREE
               </div>
-              <div style={{ display: 'flex', height: '64px', gap: '8px' }}>
-                <div style={{ width: '22%', backgroundColor: '#FFF0EE', border: `2px dashed ${COLORS.ACCENT}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.ACCENT, fontFamily: FONTS.mono, fontSize: '13px', fontWeight: 800 }}>
-                  DROPPED DATA ⚠️
-                </div>
-                <div style={{ width: '56%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.mono, fontSize: '13px', fontWeight: 700, color: COLORS.TEXT }}>
-                  ACTIVE CONVERSATION
-                </div>
-                <div style={{ width: '22%', backgroundColor: COLORS.ACCENT_2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontFamily: FONTS.mono, fontSize: '13px', fontWeight: 800 }}>
-                  NEW OUTPUT
-                </div>
-              </div>
-            </div>
-          </Step>
-        </Steps>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom: Real-Time Event Rows */}
+        <div
+          style={{
+            backgroundColor: COLORS.SURFACE,
+            border: `1px solid ${COLORS.BORDER}`,
+            padding: '18px 24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+          }}
+        >
+          <span style={{ fontFamily: FONTS.mono, fontSize: '12px', fontWeight: 700, color: COLORS.MUTED, marginBottom: '4px' }}>
+            REAL-TIME TOKEN STREAM
+          </span>
+          <ContextEventRow item={CONTEXT_EVENTS[0]} visible={stepCount >= 1} evicted={isOverflow} />
+          <ContextEventRow item={CONTEXT_EVENTS[1]} visible={stepCount >= 2} evicted={false} />
+          <ContextEventRow item={CONTEXT_EVENTS[2]} visible={stepCount >= 3} evicted={false} />
+          <ContextEventRow item={CONTEXT_EVENTS[3]} visible={stepCount >= 4} evicted={false} />
+          <ContextEventRow item={CONTEXT_EVENTS[4]} visible={stepCount >= 5} evicted={false} />
+        </div>
       </div>
     </SlideContainer>
   );
@@ -1752,8 +2492,9 @@ const Slide18_Hallucinations: Page = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {examples.map((ex) => (
                     <div key={ex.title} style={{ backgroundColor: '#FFF0EE', border: `1px solid ${COLORS.ACCENT}`, padding: '14px 18px' }}>
-                      <span style={{ fontFamily: FONTS.heading, fontSize: '18px', fontWeight: 800, color: COLORS.ACCENT, display: 'block', marginBottom: '4px' }}>
-                        ⚠️ {ex.title}
+                      <span style={{ fontFamily: FONTS.heading, fontSize: '18px', fontWeight: 800, color: COLORS.ACCENT, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <AlertTriangle size={18} color={COLORS.ACCENT} style={{ flexShrink: 0 }} />
+                        {ex.title}
                       </span>
                       <span style={{ fontFamily: FONTS.body, fontSize: '15px', color: COLORS.TEXT }}>
                         {ex.desc}
@@ -1890,19 +2631,19 @@ const Slide21_Anatomy: Page = () => {
 const Slide22_Vocabulary: Page = () => {
   const domains = [
     {
-      domain: 'FASHION & BRAND DESIGN',
-      basic: '"Make a nice minimal winter jacket."',
-      tech: '"Double-breasted wool overcoat, dropped shoulders, #09090B raw hem."',
+      domain: 'PRODUCT PHOTOGRAPHY',
+      basic: '"Take a nice photo of my product."',
+      tech: '"Studio softbox lighting, blurred background (f/1.8), 45-degree angle, clean white backdrop."',
     },
     {
-      domain: 'SOFTWARE ARCHITECTURE',
-      basic: '"Build a fast web server."',
-      tech: '"Async Rust microservice with Actix-web, Redis cache, and Postgres pool."',
+      domain: 'BUSINESS & MARKETING',
+      basic: '"Write a marketing email for our launch."',
+      tech: '"Short B2B cold email: pain-point hook, 1-sentence case study, and a single call-to-action."',
     },
     {
-      domain: 'CINEMATOGRAPHY & VIDEO',
-      basic: '"Make a dramatic movie shot."',
-      tech: '"85mm anamorphic lens, 2.39:1 aspect ratio, low-key lighting, 24fps."',
+      domain: 'WEB DESIGN & UI',
+      basic: '"Make a modern homepage."',
+      tech: '"Split-screen hero section, sticky top navbar, 3-column pricing table, dark-mode theme."',
     },
   ];
 
@@ -1968,8 +2709,3017 @@ const Slide22_Vocabulary: Page = () => {
   );
 };
 
+// ---------------------------------------------------------------------------
+// Staggered Entrance Helper (Day 03 & Day 04)
+// ---------------------------------------------------------------------------
+
+function StaggerItem({
+  index = 0,
+  children,
+  style,
+}: {
+  index?: number;
+  children: ReactNode;
+  style?: CSSProperties;
+}) {
+  const isActive = useIsActivePage();
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (!isActive) {
+      setShown(false);
+      return;
+    }
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setShown(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [isActive]);
+
+  return (
+    <div
+      style={{
+        opacity: shown ? 1 : 0,
+        transform: shown ? 'translateY(0)' : 'translateY(14px)',
+        transition:
+          'opacity 380ms cubic-bezier(0, 0, 0.2, 1), transform 380ms cubic-bezier(0, 0, 0.2, 1)',
+        transitionDelay: shown ? `${140 + index * 110}ms` : '0ms',
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 // ===========================================================================
-// Speaker Notes & Metadata (22 Slides Total)
+// DAY 03: AI Creation Studio — Brand, Visuals, and Website
+// ===========================================================================
+
+function PipelineStepCard({
+  num,
+  title,
+  role,
+  icon: Icon,
+  highlighted = false,
+}: {
+  num: string;
+  title: string;
+  role: string;
+  icon: LucideIcon;
+  highlighted?: boolean;
+}) {
+  return (
+    <SwissCard
+      highlighted={highlighted}
+      style={{
+        height: '430px',
+        justifyContent: 'space-between',
+        padding: '36px',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <span
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '48px',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            color: highlighted ? COLORS.ACCENT : COLORS.TEXT,
+          }}
+        >
+          {num}
+        </span>
+        <MonoPill
+          color={highlighted ? COLORS.BG : COLORS.MUTED}
+          bg={highlighted ? COLORS.ACCENT : COLORS.BG}
+          border={highlighted ? COLORS.ACCENT : COLORS.BORDER}
+        >
+          STEP {num}
+        </MonoPill>
+      </div>
+
+      <div>
+        <div
+          style={{
+            width: '64px',
+            height: '64px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: COLORS.BG,
+            border: `1px solid ${COLORS.BORDER}`,
+            marginBottom: '28px',
+          }}
+        >
+          <Icon size={32} strokeWidth={1.75} color={highlighted ? COLORS.ACCENT : COLORS.TEXT} />
+        </div>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '34px',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: COLORS.TEXT,
+            marginBottom: '10px',
+          }}
+        >
+          {title}
+        </div>
+        <div
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '20px',
+            fontWeight: 500,
+            color: COLORS.MUTED,
+          }}
+        >
+          {role}
+        </div>
+      </div>
+    </SwissCard>
+  );
+}
+
+function StackToolCard({
+  index,
+  toolName,
+  role,
+  tier,
+  accent,
+  icon: Icon,
+}: {
+  index: string;
+  toolName: string;
+  role: string;
+  tier: string;
+  accent: string;
+  icon: LucideIcon;
+}) {
+  return (
+    <SwissCard
+      style={{
+        height: '460px',
+        justifyContent: 'space-between',
+        padding: '44px',
+        borderTop: `6px solid ${accent}`,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '22px',
+            fontWeight: 700,
+            color: accent,
+          }}
+        >
+          {index}
+        </span>
+        <MonoPill color={accent} bg={COLORS.BG} border={accent}>
+          {tier}
+        </MonoPill>
+      </div>
+
+      <div
+        style={{
+          width: '88px',
+          height: '88px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: COLORS.BG,
+          border: `1px solid ${COLORS.BORDER}`,
+        }}
+      >
+        <Icon size={44} strokeWidth={1.75} color={accent} />
+      </div>
+
+      <div>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '38px',
+            fontWeight: 800,
+            lineHeight: 1.15,
+            letterSpacing: '-0.02em',
+            color: COLORS.TEXT,
+            marginBottom: '12px',
+          }}
+        >
+          {toolName}
+        </div>
+        <div
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '22px',
+            fontWeight: 600,
+            color: COLORS.MUTED,
+          }}
+        >
+          {role}
+        </div>
+      </div>
+    </SwissCard>
+  );
+}
+
+function ColorSwatch({
+  hex,
+  label,
+  lightText = false,
+}: {
+  hex: string;
+  label: string;
+  lightText?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        height: '100%',
+        backgroundColor: hex,
+        border: `1px solid ${COLORS.BORDER}`,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        padding: '16px',
+        boxSizing: 'border-box',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: FONTS.mono,
+          fontSize: '18px',
+          fontWeight: 700,
+          color: lightText ? COLORS.BG : COLORS.TEXT,
+        }}
+      >
+        {hex}
+      </div>
+      <div
+        style={{
+          fontFamily: FONTS.mono,
+          fontSize: '14px',
+          fontWeight: 500,
+          color: lightText ? '#A1A1AA' : COLORS.MUTED,
+          marginTop: '4px',
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function CapsuleLookbookCard({
+  num,
+  name,
+  price,
+  hint,
+}: {
+  num: string;
+  name: string;
+  price: string;
+  hint: string;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: COLORS.SURFACE,
+        border: `1px solid ${COLORS.BORDER}`,
+        height: '520px',
+        boxSizing: 'border-box',
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          margin: '20px 20px 0 20px',
+          backgroundColor: COLORS.BG,
+          border: `1px solid ${COLORS.BORDER}`,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '14px',
+            left: '14px',
+            zIndex: 2,
+            padding: '4px 10px',
+            backgroundColor: COLORS.BG,
+            border: `1px solid ${COLORS.BORDER}`,
+            fontFamily: FONTS.mono,
+            fontSize: '14px',
+            fontWeight: 700,
+            color: COLORS.MUTED,
+          }}
+        >
+          DROP // {num}
+        </div>
+        <ImagePlaceholder hint={hint} />
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '22px 24px',
+          gap: '12px',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '22px',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: COLORS.TEXT,
+          }}
+        >
+          {num} // {name}
+        </div>
+        <div
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '24px',
+            fontWeight: 700,
+            color: COLORS.ACCENT,
+            flexShrink: 0,
+          }}
+        >
+          {price}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VoicePillarCard({
+  num,
+  adjective,
+  sample,
+  accent,
+}: {
+  num: string;
+  adjective: string;
+  sample: string;
+  accent: string;
+}) {
+  return (
+    <SwissCard
+      style={{
+        height: '420px',
+        justifyContent: 'space-between',
+        padding: '40px',
+        borderTop: `6px solid ${accent}`,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: FONTS.mono, fontSize: '22px', fontWeight: 700, color: accent }}>
+          {num}
+        </span>
+        <MonoPill color={accent} bg={COLORS.BG} border={accent}>
+          VOICE PILLAR
+        </MonoPill>
+      </div>
+
+      <div
+        style={{
+          fontFamily: FONTS.heading,
+          fontSize: '46px',
+          fontWeight: 800,
+          letterSpacing: '-0.03em',
+          color: COLORS.TEXT,
+        }}
+      >
+        {adjective}
+      </div>
+
+      <div
+        style={{
+          fontFamily: FONTS.mono,
+          fontSize: '20px',
+          lineHeight: 1.45,
+          color: COLORS.MUTED,
+          borderTop: `1px solid ${COLORS.BORDER}`,
+          paddingTop: '20px',
+        }}
+      >
+        {sample}
+      </div>
+    </SwissCard>
+  );
+}
+
+function FunnelInputNode({ label, tag }: { label: string; tag: string }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '24px 28px',
+        backgroundColor: COLORS.SURFACE,
+        border: `1px solid ${COLORS.BORDER}`,
+      }}
+    >
+      <span
+        style={{
+          fontFamily: FONTS.heading,
+          fontSize: '26px',
+          fontWeight: 700,
+          color: COLORS.TEXT,
+        }}
+      >
+        {label}
+      </span>
+      <MonoPill bg={COLORS.BG}>{tag}</MonoPill>
+    </div>
+  );
+}
+
+function PromptBlock({
+  tag,
+  accent,
+  spec,
+  icon: Icon,
+}: {
+  tag: string;
+  accent: string;
+  spec: string;
+  icon?: LucideIcon;
+}) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '320px 1fr',
+        alignItems: 'center',
+        gap: '32px',
+        padding: '26px 32px',
+        backgroundColor: COLORS.BG,
+        border: `1px solid ${COLORS.BORDER}`,
+        borderLeft: `8px solid ${accent}`,
+      }}
+    >
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontFamily: FONTS.mono,
+          fontSize: '18px',
+          fontWeight: 700,
+          color: accent,
+          letterSpacing: '0.06em',
+        }}
+      >
+        {tag}
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          fontFamily: FONTS.mono,
+          fontSize: '24px',
+          fontWeight: 600,
+          color: COLORS.TEXT,
+        }}
+      >
+        {Icon && <Icon size={24} color={accent} />}
+        <span>{spec}</span>
+      </div>
+    </div>
+  );
+}
+
+function PublishStepCard({
+  num,
+  title,
+  detail,
+  badge,
+  icon: Icon,
+  highlighted = false,
+}: {
+  num: string;
+  title: string;
+  detail: string;
+  badge: string;
+  icon: LucideIcon;
+  highlighted?: boolean;
+}) {
+  return (
+    <SwissCard
+      highlighted={highlighted}
+      style={{
+        height: '420px',
+        padding: '40px',
+        justifyContent: 'space-between',
+        backgroundColor: highlighted ? COLORS.TEXT : COLORS.SURFACE,
+        color: highlighted ? COLORS.BG : COLORS.TEXT,
+        borderWidth: highlighted ? '2px' : '1px',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '42px',
+            fontWeight: 700,
+            color: highlighted ? COLORS.ACCENT : COLORS.TEXT,
+          }}
+        >
+          {num}
+        </span>
+        <MonoPill
+          color={highlighted ? COLORS.BG : COLORS.MUTED}
+          bg={highlighted ? COLORS.ACCENT : COLORS.BG}
+          border={highlighted ? COLORS.ACCENT : COLORS.BORDER}
+        >
+          {badge}
+        </MonoPill>
+      </div>
+
+      <div
+        style={{
+          width: '72px',
+          height: '72px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: highlighted ? '#18181B' : COLORS.BG,
+          border: `1px solid ${highlighted ? '#3F3F46' : COLORS.BORDER}`,
+        }}
+      >
+        <Icon size={36} color={highlighted ? COLORS.ACCENT : COLORS.TEXT} strokeWidth={1.75} />
+      </div>
+
+      <div>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '34px',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: highlighted ? COLORS.BG : COLORS.TEXT,
+            marginBottom: '10px',
+          }}
+        >
+          {title}
+        </div>
+        <div
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '18px',
+            color: highlighted ? '#A1A1AA' : COLORS.MUTED,
+          }}
+        >
+          {detail}
+        </div>
+      </div>
+    </SwissCard>
+  );
+}
+
+// Slide 23: Day 03 Topic Roadmap (Camp Roadmap highlighting Day 03)
+const Slide23_D3Roadmap: Page = () => <CampRoadmap activeDay="03" />;
+
+// Slide 24: Title & The 4-Step Studio Pipeline
+const Slide24_D3Pipeline: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // THE PIPELINE"
+      tagColor={COLORS.ACCENT}
+      title="Build a Live Fashion Brand."
+      subtitle="Connect four AI tools to create a complete product in 60 minutes."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: '24px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <PipelineStepCard num="01" title="Brand Identity" role="LLM Strategy" icon={Sparkles} />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <PipelineStepCard num="02" title="Product Collection" role="Image-to-Image AI" icon={Shirt} />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <PipelineStepCard num="03" title="Social Campaign" role="Multimodal Copy" icon={Share2} />
+      </StaggerItem>
+      <StaggerItem index={3}>
+        <PipelineStepCard
+          num="04"
+          title="Live Storefront"
+          role="Lovable Web App"
+          icon={Globe}
+          highlighted
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 25: Today's Free Tool Stack
+const Slide25_D3Stack: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // THE STACK"
+      tagColor={COLORS.ACCENT}
+      title="Zero Code. Free Tools Only."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '32px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <StackToolCard
+          index="TOOL 01"
+          toolName="Google Gemini"
+          role="Brand and Meta-Prompts"
+          tier="FREE TIER"
+          accent={COLORS.ACCENT_2}
+          icon={MessageSquareCode}
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <StackToolCard
+          index="TOOL 02"
+          toolName="Leonardo AI"
+          role="Garment Image Restyling"
+          tier="FREE TIER"
+          accent={COLORS.TEXT}
+          icon={Wand2}
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <StackToolCard
+          index="TOOL 03"
+          toolName="Lovable.dev"
+          role="Single-Prompt Web UI"
+          tier="5 CREDITS/DAY"
+          accent={COLORS.ACCENT}
+          icon={Layout}
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 26: Step 1: The Brand Identity Bible
+const Slide26_D3BrandBible: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // BRAND STRATEGY"
+      tagColor={COLORS.ACCENT}
+      title="One Prompt. Complete Brand Identity."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1.25fr 1fr',
+        gridTemplateRows: '260px 260px',
+        gap: '24px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0} style={{ display: 'flex', height: '100%' }}>
+        <SwissCard
+          style={{
+            flex: 1,
+            backgroundColor: '#141312',
+            color: '#EAE6DF',
+            justifyContent: 'space-between',
+            padding: '36px',
+          }}
+        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <MonoPill color="#EAE6DF" bg="transparent" border="#2E2B28">
+            NAME & SLOGAN
+          </MonoPill>
+          <Sparkles size={24} color="#D46A31" />
+        </div>
+        <div>
+          <div
+            style={{
+              fontFamily: FONTS.heading,
+              fontSize: '68px',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              lineHeight: 1,
+              color: '#EAE6DF',
+            }}
+          >
+            RIMAL KINETIC
+          </div>
+          <div
+            style={{
+              fontFamily: FONTS.mono,
+              fontSize: '20px',
+              color: '#D46A31',
+              marginTop: '14px',
+              letterSpacing: '0.06em',
+            }}
+          >
+            ANCIENT SCRIPT. FUTURE STREETS.
+          </div>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+
+      <StaggerItem index={1} style={{ display: 'flex', height: '100%' }}>
+        <SwissCard style={{ flex: 1, justifyContent: 'space-between', padding: '28px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <MonoPill bg={COLORS.BG}>COLOR PALETTE</MonoPill>
+          <span style={{ fontFamily: FONTS.mono, fontSize: '16px', color: COLORS.MUTED }}>
+            4 TOKENS
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
+          <ColorSwatch hex="#141312" label="OBSIDIAN" lightText />
+          <ColorSwatch hex="#EAE6DF" label="ALABASTER" />
+          <ColorSwatch hex="#D46A31" label="TERRACOTTA" lightText />
+          <ColorSwatch hex="#298C82" label="VERDIGRIS" lightText />
+        </div>
+      </SwissCard>
+      </StaggerItem>
+
+      <StaggerItem index={2} style={{ display: 'flex', height: '100%' }}>
+        <SwissCard style={{ flex: 1, justifyContent: 'space-between', padding: '32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <MonoPill bg={COLORS.BG}>TYPOGRAPHY</MonoPill>
+          <span style={{ fontFamily: FONTS.mono, fontSize: '16px', color: COLORS.MUTED }}>
+            DISPLAY + MONO
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '40px' }}>
+          <div
+            style={{
+              fontFamily: FONTS.heading,
+              fontSize: '108px',
+              fontWeight: 800,
+              lineHeight: 0.9,
+              letterSpacing: '-0.04em',
+              color: COLORS.TEXT,
+            }}
+          >
+            Aa
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ fontFamily: FONTS.heading, fontSize: '32px', fontWeight: 800 }}>
+              Syne (Bold Geometric)
+            </div>
+            <div style={{ fontFamily: FONTS.mono, fontSize: '22px', color: COLORS.MUTED }}>
+              Space Mono // 0123456789
+            </div>
+          </div>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+
+      <StaggerItem index={3} style={{ display: 'flex', height: '100%' }}>
+        <SwissCard
+          highlighted
+          highlightColor="#298C82"
+          style={{ flex: 1, justifyContent: 'space-between', padding: '32px' }}
+        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <MonoPill color="#298C82" bg={COLORS.BG} border="#298C82">
+            TARGET PERSONA
+          </MonoPill>
+          <span style={{ fontFamily: FONTS.mono, fontSize: '16px', color: COLORS.MUTED }}>
+            ICP // 01
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <div
+            style={{
+              width: '88px',
+              height: '88px',
+              backgroundColor: '#141312',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <User size={44} color="#EAE6DF" strokeWidth={1.75} />
+          </div>
+          <div>
+            <div
+              style={{
+                fontFamily: FONTS.heading,
+                fontSize: '32px',
+                fontWeight: 800,
+                letterSpacing: '-0.02em',
+                color: COLORS.TEXT,
+              }}
+            >
+              Avant-Garde Tastemaker
+            </div>
+            <div
+              style={{
+                fontFamily: FONTS.mono,
+                fontSize: '18px',
+                color: COLORS.MUTED,
+                marginTop: '6px',
+              }}
+            >
+              AGE 22–35 // TECH-FORWARD // NOMADIC
+            </div>
+          </div>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 26B: Brand Voice & Tone (From Report)
+const Slide26B_D3BrandVoice: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // BRAND VOICE & TONE"
+      tagColor={COLORS.ACCENT}
+      title="Prophetic. Visceral. Minimalist."
+      subtitle="Combine desert heritage with modern cyberpunk style."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '32px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <VoicePillarCard
+          num="01"
+          adjective="Prophetic"
+          sample='"Sand remembers every imprint. Nothing lasts forever."'
+          accent="#D46A31"
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <VoicePillarCard
+          num="02"
+          adjective="Visceral"
+          sample='"500 GSM sand-washed fleece. Forged from raw earth tones."'
+          accent={COLORS.TEXT}
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <VoicePillarCard
+          num="03"
+          adjective="Minimalist"
+          sample='"3 archival pieces. 48 hours. Zero restocks."'
+          accent="#298C82"
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 27: Step 2: Reference-Guided Generation
+const Slide27_D3ImageToImage: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // IMAGE-TO-IMAGE"
+      tagColor={COLORS.ACCENT}
+      title="Use a Reference Image. Keep the Structure."
+      subtitle="Send a clothing reference photo to Image AI to create custom designs."
+      titleSize={64}
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 240px 1fr',
+        alignItems: 'center',
+        gap: '24px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <SwissCard
+          style={{
+            height: '470px',
+            justifyContent: 'space-between',
+            borderColor: COLORS.MUTED,
+            padding: '36px',
+          }}
+        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <MonoPill color={COLORS.MUTED} bg={COLORS.BG} border={COLORS.MUTED}>
+            INPUT // WEB REFERENCE
+          </MonoPill>
+          <span style={{ fontFamily: FONTS.mono, fontSize: '16px', color: COLORS.MUTED }}>
+            FLAT-LAY
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', flex: 1, margin: '20px 0', overflow: 'hidden', border: `1px solid ${COLORS.BORDER}` }}>
+          <ImagePlaceholder hint="Plain oversized hoodie flat-lay web reference" />
+        </div>
+
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '28px',
+            fontWeight: 700,
+            color: COLORS.MUTED,
+            textAlign: 'center',
+          }}
+        >
+          Plain Reference Garment
+        </div>
+      </SwissCard>
+      </StaggerItem>
+
+      <StaggerItem
+        index={1}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '16px',
+        }}
+      >
+        <div
+          style={{
+            padding: '10px 18px',
+            backgroundColor: COLORS.ACCENT_2,
+            color: COLORS.BG,
+            fontFamily: FONTS.mono,
+            fontSize: '16px',
+            fontWeight: 700,
+            letterSpacing: '0.06em',
+            textAlign: 'center',
+          }}
+        >
+          + BRAND PROMPT
+        </div>
+        <ArrowRight size={48} color={COLORS.ACCENT} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={2}>
+        <SwissCard
+          highlighted
+          highlightColor={COLORS.ACCENT}
+          style={{
+            height: '470px',
+            justifyContent: 'space-between',
+            borderWidth: '2px',
+            padding: '36px',
+          }}
+        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <MonoPill color={COLORS.BG} bg={COLORS.ACCENT} border={COLORS.ACCENT}>
+            OUTPUT // AI EDITORIAL
+          </MonoPill>
+          <span style={{ fontFamily: FONTS.mono, fontSize: '16px', color: COLORS.ACCENT }}>
+            LEONARDO AI
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', flex: 1, margin: '20px 0', overflow: 'hidden', border: `1px solid ${COLORS.BORDER}` }}>
+          <ImagePlaceholder hint="RIMAL KINETIC Mirage Heavyweight Hoodie AI editorial output" />
+        </div>
+
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '28px',
+            fontWeight: 800,
+            color: COLORS.TEXT,
+            textAlign: 'center',
+          }}
+        >
+          Mirage Heavyweight Hoodie Lookbook
+        </div>
+      </SwissCard>
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 28: The 3-Piece Capsule Collection
+const Slide28_D3CapsuleDrop: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // THE CAPSULE DROP"
+      tagColor={COLORS.ACCENT}
+      title="Three Matching Products. One Visual Style."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '32px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <CapsuleLookbookCard
+          num="01"
+          name="Nomad Script Boxy Shirt"
+          price="$185"
+          hint="Nomad Script Boxy Shirt lookbook image"
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <CapsuleLookbookCard
+          num="02"
+          name="Mirage Heavyweight Hoodie"
+          price="$245"
+          hint="Mirage Heavyweight Hoodie lookbook image"
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <CapsuleLookbookCard
+          num="03"
+          name="Kinetic Calligraphy Crewneck"
+          price="$210"
+          hint="Kinetic Calligraphy Crewneck lookbook image"
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 29: Step 3: Viral Social Launch Assets
+const Slide29_D3SocialCampaign: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // SOCIAL CAMPAIGN"
+      tagColor={COLORS.ACCENT}
+      title="Use Approved Images for Launch Posts."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1.15fr 1fr',
+        gap: '32px',
+        width: '100%',
+      }}
+    >
+      {/* Left: Social Copy Text Box */}
+      <StaggerItem index={0}>
+        <SwissCard
+          style={{
+            height: '520px',
+            padding: '44px',
+            justifyContent: 'space-between',
+            backgroundColor: COLORS.SURFACE,
+          }}
+        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '32px', height: '32px', backgroundColor: '#141312' }} />
+            <span style={{ fontFamily: FONTS.mono, fontSize: '18px', fontWeight: 700 }}>
+              @RIMALKINETIC
+            </span>
+          </div>
+          <MonoPill color={COLORS.BG} bg={COLORS.ACCENT} border={COLORS.ACCENT}>
+            48-HOUR DROP
+          </MonoPill>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div
+            style={{
+              fontFamily: FONTS.heading,
+              fontSize: '38px',
+              fontWeight: 800,
+              lineHeight: 1.2,
+              letterSpacing: '-0.02em',
+              color: COLORS.TEXT,
+            }}
+          >
+            “CAPSULE 01 HAS LANDED. 3 archival pieces. 48 hours. Zero restocks.”
+          </div>
+          <div
+            style={{
+              fontFamily: FONTS.body,
+              fontSize: '24px',
+              lineHeight: 1.45,
+              color: COLORS.MUTED,
+            }}
+          >
+            Sand remembers every imprint. Heavyweight textiles forged from raw earth tones — built for the modern nomad.
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingTop: '24px',
+            borderTop: `1px solid ${COLORS.BORDER}`,
+            gap: '16px',
+          }}
+        >
+          <div style={{ fontFamily: FONTS.mono, fontSize: '16px', color: COLORS.MUTED }}>
+            #RimalKinetic  #FuturisticStreetwear
+          </div>
+          <div
+            style={{
+              padding: '10px 20px',
+              backgroundColor: COLORS.ACCENT,
+              color: COLORS.BG,
+              fontFamily: FONTS.mono,
+              fontSize: '16px',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            48-Hour Waitlist
+          </div>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+
+      {/* Right: Single Image Frame */}
+      <StaggerItem index={1}>
+        <SwissCard
+          style={{
+            height: '520px',
+            padding: '20px',
+            backgroundColor: COLORS.BG,
+          }}
+        >
+          <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+            <ImagePlaceholder hint="RIMAL KINETIC social launch campaign hero image" />
+          </div>
+        </SwissCard>
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 30: The Secret: Meta-Prompting
+const Slide30_D3MetaPrompting: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // PROMPT ARCHITECT"
+      tagColor={COLORS.ACCENT}
+      title="Use an LLM to Write the Next Prompt."
+      subtitle="Save your 5 free Lovable credits. Do not type prompts manually."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1.15fr 72px 1fr 72px 1fr',
+        alignItems: 'center',
+        gap: '16px',
+        width: '100%',
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <StaggerItem index={0}>
+          <FunnelInputNode label="Brand HEX & Fonts" tag="STEP 01" />
+        </StaggerItem>
+        <StaggerItem index={1}>
+          <FunnelInputNode label="3 Product Specs" tag="STEP 02" />
+        </StaggerItem>
+        <StaggerItem index={2}>
+          <FunnelInputNode label="3 Social Posts" tag="STEP 03" />
+        </StaggerItem>
+      </div>
+
+      <StaggerItem index={3} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={44} color={COLORS.ACCENT_2} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={3}>
+        <SwissCard
+        highlighted
+        highlightColor={COLORS.ACCENT_2}
+        style={{
+          height: '340px',
+          borderWidth: '2px',
+          backgroundColor: COLORS.BG,
+          justifyContent: 'space-between',
+          padding: '36px',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <MonoPill color={COLORS.BG} bg={COLORS.ACCENT_2} border={COLORS.ACCENT_2}>
+            SYNTHESIS
+          </MonoPill>
+          <Cpu size={32} color={COLORS.ACCENT_2} />
+        </div>
+        <div>
+          <div
+            style={{
+              fontFamily: FONTS.heading,
+              fontSize: '34px',
+              fontWeight: 800,
+              lineHeight: 1.15,
+              color: COLORS.TEXT,
+            }}
+          >
+            LLM Meta-Prompt Architect
+          </div>
+          <div
+            style={{
+              fontFamily: FONTS.mono,
+              fontSize: '18px',
+              color: COLORS.ACCENT_2,
+              marginTop: '12px',
+            }}
+          >
+            COMPRESSES ALL CONTEXT
+          </div>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+
+      <StaggerItem index={4} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={44} color={COLORS.ACCENT} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={4}>
+        <SwissCard
+          highlighted
+          highlightColor={COLORS.ACCENT}
+          style={{
+            height: '340px',
+            borderWidth: '2px',
+            backgroundColor: COLORS.TEXT,
+            color: COLORS.BG,
+            justifyContent: 'space-between',
+            padding: '36px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <MonoPill color={COLORS.BG} bg={COLORS.ACCENT} border={COLORS.ACCENT}>
+              READY TO PASTE
+            </MonoPill>
+            <FileCode size={32} color={COLORS.ACCENT} />
+          </div>
+          <div>
+            <div
+              style={{
+                fontFamily: FONTS.heading,
+                fontSize: '34px',
+                fontWeight: 800,
+                lineHeight: 1.15,
+                color: COLORS.BG,
+              }}
+            >
+              1 Master Lovable Prompt
+            </div>
+            <div
+              style={{
+                fontFamily: FONTS.mono,
+                fontSize: '18px',
+                color: '#A1A1AA',
+                marginTop: '12px',
+              }}
+            >
+              1 CREDIT // 80% COMPLETE
+            </div>
+          </div>
+        </SwissCard>
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 31: Anatomy of the 1-Shot Lovable Prompt
+const Slide31_D3MasterPrompt: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // MASTER PROMPT"
+      tagColor={COLORS.ACCENT}
+      title="Give Lovable All Data in One Prompt."
+    />
+
+    <SwissCard
+      style={{
+        padding: '32px',
+        gap: '18px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <PromptBlock
+          tag="[01 DESIGN SYSTEM]"
+          accent={COLORS.ACCENT_2}
+          spec="Obsidian #141312, Alabaster #EAE6DF, Terracotta #D46A31, Syne + Space Mono"
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <PromptBlock
+          tag="[02 HERO & MANIFESTO]"
+          accent={COLORS.TEXT}
+          spec='"Ancient script. Future streets." + desert editorial'
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <PromptBlock
+          tag="[03 3-ITEM CAPSULE GRID]"
+          accent={COLORS.ACCENT}
+          spec='Boxy Shirt ($185), Mirage Hoodie ($245), Crewneck ($210) + Waitlist'
+        />
+      </StaggerItem>
+      <StaggerItem index={3}>
+        <PromptBlock
+          tag="[04 ATTACHED ASSETS]"
+          accent={COLORS.MUTED}
+          icon={Paperclip}
+          spec="nomad_shirt.png, mirage_hoodie.png, kinetic_crewneck.png"
+        />
+      </StaggerItem>
+    </SwissCard>
+  </SlideContainer>
+);
+
+// Slide 31B: Live 1-Shot Lovable Output (From Report)
+const Slide31B_D3LovableOutput: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // LIVE OUTPUT"
+      tagColor={COLORS.ACCENT}
+      title="Single-Prompt Storefront: RIMAL KINETIC."
+      subtitle="Built from one master prompt. Stopped at the free-tier credit limit."
+    />
+
+    <SwissCard
+      style={{
+        height: '500px',
+        padding: '0',
+        backgroundColor: COLORS.BG,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '16px 28px',
+          backgroundColor: COLORS.SURFACE,
+          borderBottom: `1px solid ${COLORS.BORDER}`,
+        }}
+      >
+        <span style={{ fontFamily: FONTS.mono, fontSize: '18px', fontWeight: 700 }}>
+          rimal-kinetic.lovable.app
+        </span>
+      </div>
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        <ImagePlaceholder hint="RIMAL KINETIC Lovable.dev live storefront screenshot" />
+      </div>
+    </SwissCard>
+  </SlideContainer>
+);
+
+
+
+// Slide 33: The Bridge to Day 4 (The Waitlist Button)
+const Slide33_D3BridgeDay4: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // TOMORROW'S HOOK"
+      tagColor={COLORS.ACCENT}
+      title="Build the Storefront Today. Connect the Backend Tomorrow."
+      titleSize={62}
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1.15fr 260px 1fr',
+        alignItems: 'center',
+        gap: '24px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <SwissCard
+          style={{
+            height: '440px',
+            padding: '0',
+            backgroundColor: COLORS.BG,
+            justifyContent: 'space-between',
+          }}
+        >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '18px 28px',
+            backgroundColor: COLORS.SURFACE,
+            borderBottom: `1px solid ${COLORS.BORDER}`,
+          }}
+        >
+          <span style={{ fontFamily: FONTS.mono, fontSize: '16px', fontWeight: 700 }}>
+            rimal-kinetic.lovable.app
+          </span>
+          <MonoPill color={COLORS.ACCENT_2} bg={COLORS.BG} border={COLORS.ACCENT_2}>
+            DAY 03 // UI
+          </MonoPill>
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            padding: '40px',
+            gap: '28px',
+          }}
+        >
+          <div
+            style={{
+              fontFamily: FONTS.heading,
+              fontSize: '42px',
+              fontWeight: 800,
+              letterSpacing: '-0.03em',
+            }}
+          >
+            RIMAL KINETIC // CAPSULE 01
+          </div>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '14px',
+              padding: '20px 36px',
+              backgroundColor: COLORS.ACCENT,
+              color: COLORS.BG,
+              fontFamily: FONTS.mono,
+              fontSize: '24px',
+              fontWeight: 700,
+            }}
+          >
+            <MousePointerClick size={26} />
+            Reserve Now
+          </div>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+
+      <StaggerItem
+        index={1}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '16px',
+        }}
+      >
+        <MonoBadgeBridge />
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              height: '0px',
+              borderTop: `4px dashed ${COLORS.ACCENT}`,
+            }}
+          />
+          <ArrowRight size={36} color={COLORS.ACCENT} strokeWidth={2.5} />
+        </div>
+      </StaggerItem>
+
+      <StaggerItem index={2}>
+        <SwissCard
+          highlighted
+          highlightColor={COLORS.ACCENT_2}
+          style={{
+            height: '440px',
+            borderWidth: '2px',
+            backgroundColor: COLORS.TEXT,
+            color: COLORS.BG,
+            justifyContent: 'space-between',
+            padding: '40px',
+          }}
+        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <MonoPill color={COLORS.BG} bg={COLORS.ACCENT_2} border={COLORS.ACCENT_2}>
+            DAY 04 // BRAIN
+          </MonoPill>
+          <Zap size={32} color={COLORS.ACCENT} />
+        </div>
+
+        <div
+          style={{
+            width: '88px',
+            height: '88px',
+            backgroundColor: '#18181B',
+            border: '1px solid #3F3F46',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Workflow size={44} color={COLORS.BG} />
+        </div>
+
+        <div>
+          <div
+            style={{
+              fontFamily: FONTS.heading,
+              fontSize: '40px',
+              fontWeight: 800,
+              color: COLORS.BG,
+            }}
+          >
+            n8n Automation
+          </div>
+          <div
+            style={{
+              fontFamily: FONTS.mono,
+              fontSize: '18px',
+              color: '#A1A1AA',
+              marginTop: '10px',
+            }}
+          >
+            CRM + EMAIL + ORDER SYNC
+          </div>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+function MonoBadgeBridge() {
+  return <MonoPill color={COLORS.TEXT} bg={COLORS.SURFACE}>WEBHOOK →</MonoPill>;
+}
+
+// Slide 34: Publish App & Share to Social Media
+const Slide34_D3PublishAndShare: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 03 // LAUNCH & SHARE"
+      tagColor={COLORS.ACCENT}
+      title="Publish the App. Share on Social Media."
+      subtitle="Deploy your Lovable storefront and add the live link to your posts."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 56px 1fr 56px 1fr',
+        alignItems: 'center',
+        gap: '12px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <PublishStepCard
+          num="01"
+          title="Publish App"
+          detail="rimal-kinetic.lovable.app"
+          badge="LOVABLE DEPLOY"
+          icon={Globe}
+        />
+      </StaggerItem>
+
+      <StaggerItem index={1} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={36} color={COLORS.ACCENT_2} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={2}>
+        <PublishStepCard
+          num="02"
+          title="Copy Live URL"
+          detail="Link in Bio & Story Sticker"
+          badge="1-CLICK SHARE"
+          icon={Send}
+        />
+      </StaggerItem>
+
+      <StaggerItem index={3} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={36} color={COLORS.ACCENT} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={4}>
+        <PublishStepCard
+          num="03"
+          title="Share Drop Post"
+          detail="@RIMALKINETIC // 48H DROP"
+          badge="GO LIVE"
+          icon={Share2}
+          highlighted
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// ===========================================================================
+// DAY 04: Automation Foundations with n8n
+// ===========================================================================
+
+function D4ModuleCard({
+  num,
+  title,
+  subtitle,
+  icon: Icon,
+  highlighted = false,
+}: {
+  num: string;
+  title: string;
+  subtitle: string;
+  icon: LucideIcon;
+  highlighted?: boolean;
+}) {
+  return (
+    <SwissCard
+      highlighted={highlighted}
+      style={{
+        height: '420px',
+        padding: '40px',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span
+          style={{
+            fontFamily: FONTS.mono,
+            fontSize: '48px',
+            fontWeight: 700,
+            color: highlighted ? COLORS.ACCENT : COLORS.TEXT,
+          }}
+        >
+          {num}
+        </span>
+        <MonoPill
+          color={highlighted ? COLORS.BG : COLORS.MUTED}
+          bg={highlighted ? COLORS.ACCENT : COLORS.BG}
+          border={highlighted ? COLORS.ACCENT : COLORS.BORDER}
+        >
+          MODULE {num}
+        </MonoPill>
+      </div>
+
+      <div
+        style={{
+          width: '72px',
+          height: '72px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: COLORS.BG,
+          border: `1px solid ${COLORS.BORDER}`,
+        }}
+      >
+        <Icon size={36} color={highlighted ? COLORS.ACCENT : COLORS.TEXT} strokeWidth={1.75} />
+      </div>
+
+      <div>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '34px',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: COLORS.TEXT,
+            marginBottom: '8px',
+          }}
+        >
+          {title}
+        </div>
+        <div style={{ fontFamily: FONTS.mono, fontSize: '18px', color: COLORS.MUTED }}>
+          {subtitle}
+        </div>
+      </div>
+    </SwissCard>
+  );
+}
+
+function CanvasNodeCard({
+  nodeId,
+  label,
+  sub,
+  accent,
+  icon: Icon,
+}: {
+  nodeId: string;
+  label: string;
+  sub: string;
+  accent: string;
+  icon: LucideIcon;
+}) {
+  return (
+    <div
+      style={{
+        backgroundColor: COLORS.BG,
+        border: `2px solid ${accent}`,
+        padding: '28px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '18px',
+        minWidth: '280px',
+        boxSizing: 'border-box',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: FONTS.mono, fontSize: '15px', fontWeight: 700, color: accent }}>
+          {nodeId}
+        </span>
+        <div
+          style={{
+            width: '12px',
+            height: '12px',
+            backgroundColor: '#16A34A',
+          }}
+        />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div
+          style={{
+            width: '52px',
+            height: '52px',
+            backgroundColor: COLORS.SURFACE,
+            border: `1px solid ${COLORS.BORDER}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Icon size={26} color={accent} />
+        </div>
+        <div>
+          <div style={{ fontFamily: FONTS.heading, fontSize: '24px', fontWeight: 800 }}>
+            {label}
+          </div>
+          <div style={{ fontFamily: FONTS.mono, fontSize: '15px', color: COLORS.MUTED }}>
+            {sub}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FormulaPillarCard({
+  num,
+  title,
+  role,
+  bg,
+  icon: Icon,
+}: {
+  num: string;
+  title: string;
+  role: string;
+  bg: string;
+  icon: LucideIcon;
+}) {
+  return (
+    <div
+      style={{
+        height: '440px',
+        backgroundColor: bg,
+        color: COLORS.BG,
+        padding: '44px',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: FONTS.mono, fontSize: '44px', fontWeight: 700, opacity: 0.9 }}>
+          {num}
+        </span>
+        <Icon size={40} color={COLORS.BG} strokeWidth={1.75} />
+      </div>
+
+      <div>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '46px',
+            fontWeight: 800,
+            letterSpacing: '-0.03em',
+            lineHeight: 1.05,
+            marginBottom: '12px',
+          }}
+        >
+          {title}
+        </div>
+        <div style={{ fontFamily: FONTS.mono, fontSize: '22px', opacity: 0.85 }}>
+          {role}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ServiceId =
+  | 'gmail'
+  | 'sheets'
+  | 'calendar'
+  | 'slack'
+  | 'telegram'
+  | 'notion'
+  | 'stripe'
+  | 'shopify'
+  | 'github'
+  | 'typeform'
+  | 'airtable'
+  | 'hubspot'
+  | 'discord'
+  | 'supabase'
+  | 'n8n'
+  | 'cron'
+  | 'webhook';
+
+const SERVICE_ICONS: Record<ServiceId, { icon: LucideIcon; color: string }> = {
+  gmail: { icon: Mail, color: '#EA4335' },
+  sheets: { icon: Table, color: '#0F9D58' },
+  calendar: { icon: Calendar, color: '#4285F4' },
+  slack: { icon: Hash, color: '#E01E5A' },
+  telegram: { icon: Send, color: '#229ED9' },
+  notion: { icon: FileText, color: '#09090B' },
+  stripe: { icon: CreditCard, color: '#635BFF' },
+  shopify: { icon: ShoppingBag, color: '#95BF47' },
+  github: { icon: Code2, color: '#181717' },
+  typeform: { icon: ClipboardList, color: '#262627' },
+  airtable: { icon: Grid, color: '#FCB400' },
+  hubspot: { icon: Share2, color: '#FF7A59' },
+  discord: { icon: MessageCircle, color: '#5865F2' },
+  supabase: { icon: Zap, color: '#3ECF8E' },
+  n8n: { icon: Workflow, color: '#EA4B71' },
+  cron: { icon: Clock, color: '#FF3B30' },
+  webhook: { icon: Webhook, color: '#2563EB' },
+};
+
+function ServiceMark({ id, size = 20 }: { id: ServiceId; size?: number }) {
+  const { icon: Icon, color } = SERVICE_ICONS[id];
+  return <Icon size={size} color={color} strokeWidth={2} />;
+}
+
+function ServiceChip({ id, label }: { id: ServiceId; label: string }) {
+  return (
+    <div
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '8px 14px',
+        backgroundColor: COLORS.BG,
+        border: `1px solid ${COLORS.BORDER}`,
+        fontFamily: FONTS.mono,
+        fontSize: '15px',
+        fontWeight: 600,
+        color: COLORS.TEXT,
+      }}
+    >
+      <ServiceMark id={id} size={20} />
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function TriggerNodeCard({
+  num,
+  title,
+  sub,
+  services,
+}: {
+  num: string;
+  title: string;
+  sub: string;
+  services: ReactNode;
+}) {
+  return (
+    <SwissCard
+      style={{
+        height: '440px',
+        padding: '32px',
+        justifyContent: 'space-between',
+        position: 'relative',
+        borderTop: `6px solid ${COLORS.ACCENT}`,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: FONTS.mono, fontSize: '20px', fontWeight: 700, color: COLORS.MUTED }}>
+          {num}
+        </span>
+        <div
+          style={{
+            width: '36px',
+            height: '36px',
+            backgroundColor: COLORS.ACCENT,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Zap size={20} color={COLORS.BG} />
+        </div>
+      </div>
+
+      <div>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '28px',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: COLORS.TEXT,
+            marginBottom: '6px',
+          }}
+        >
+          {title}
+        </div>
+        <div style={{ fontFamily: FONTS.mono, fontSize: '16px', color: COLORS.MUTED }}>
+          {sub}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {services}
+      </div>
+    </SwissCard>
+  );
+}
+
+function ActionSinkCard({
+  category,
+  action,
+  accent,
+  services,
+}: {
+  category: string;
+  action: string;
+  accent: string;
+  services: ReactNode;
+}) {
+  return (
+    <SwissCard
+      style={{
+        height: '440px',
+        padding: '32px',
+        justifyContent: 'space-between',
+        borderTop: `6px solid ${accent}`,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <MonoPill color={accent} bg={COLORS.BG} border={accent}>
+          ACTION
+        </MonoPill>
+      </div>
+
+      <div>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '28px',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: COLORS.TEXT,
+            marginBottom: '6px',
+          }}
+        >
+          {category}
+        </div>
+        <div style={{ fontFamily: FONTS.mono, fontSize: '17px', fontWeight: 600, color: accent }}>
+          {action}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {services}
+      </div>
+    </SwissCard>
+  );
+}
+
+function FlowNodeBox({
+  num,
+  title,
+  sub,
+  accent = COLORS.TEXT,
+  bg = COLORS.BG,
+  textColor = COLORS.TEXT,
+}: {
+  num: string;
+  title: string;
+  sub: string;
+  accent?: string;
+  bg?: string;
+  textColor?: string;
+}) {
+  return (
+    <div
+      style={{
+        padding: '24px 26px',
+        backgroundColor: bg,
+        border: `2px solid ${accent}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+      }}
+    >
+      <span style={{ fontFamily: FONTS.mono, fontSize: '15px', fontWeight: 700, color: accent }}>
+        {num}
+      </span>
+      <div
+        style={{
+          fontFamily: FONTS.heading,
+          fontSize: '26px',
+          fontWeight: 800,
+          lineHeight: 1.15,
+          color: textColor,
+        }}
+      >
+        {title}
+      </div>
+      <div style={{ fontFamily: FONTS.mono, fontSize: '16px', opacity: 0.8, color: textColor }}>
+        {sub}
+      </div>
+    </div>
+  );
+}
+
+// Slide 35: Day 04 Topic Roadmap
+const Slide35_D4Roadmap: Page = () => <CampRoadmap activeDay="04" />;
+
+// Slide 36: Title & Today's Blueprint
+const Slide36_D4Blueprint: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // OVERVIEW"
+      tagColor={COLORS.ACCENT}
+      title="Connect the System: n8n Foundations."
+      subtitle="Replace manual tasks with automated workflows."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '32px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <D4ModuleCard
+          num="01"
+          title="The Canvas & UI"
+          subtitle="Nodes, Wires & JSON"
+          icon={LayoutGrid}
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <D4ModuleCard
+          num="02"
+          title="Trigger → Logic → Action"
+          subtitle="3-Part System Model"
+          icon={GitBranch}
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <D4ModuleCard
+          num="03"
+          title="Multi-Step Workflows"
+          subtitle="Storefront to Alerts"
+          icon={Zap}
+          highlighted
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+function ReasonRow({
+  icon: Icon,
+  text,
+  accent,
+}: {
+  icon: LucideIcon;
+  text: string;
+  accent: string;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+        padding: '14px 20px',
+        backgroundColor: COLORS.SURFACE,
+        border: `1px solid ${COLORS.BORDER}`,
+        borderLeft: `4px solid ${accent}`,
+      }}
+    >
+      <Icon size={20} color={accent} strokeWidth={2} />
+      <span
+        style={{
+          fontFamily: FONTS.mono,
+          fontSize: '18px',
+          fontWeight: 600,
+          color: COLORS.TEXT,
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+}
+
+// Slide 37: Manual Work vs. System Automation
+const Slide37_D4ManualVsAuto: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // WHY AUTOMATE"
+      tagColor={COLORS.ACCENT}
+      title="Do Not Copy Data Manually."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '36px',
+        width: '100%',
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <StaggerItem index={0}>
+          <SwissCard
+            style={{
+              height: '320px',
+              padding: '36px',
+              justifyContent: 'space-between',
+              borderColor: COLORS.MUTED,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <MonoPill color={COLORS.MUTED} bg={COLORS.BG} border={COLORS.MUTED}>
+                BEFORE // MANUAL
+              </MonoPill>
+              <User size={30} color={COLORS.MUTED} />
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontFamily: FONTS.heading,
+                  fontSize: '40px',
+                  fontWeight: 800,
+                  color: COLORS.MUTED,
+                  marginBottom: '12px',
+                }}
+              >
+                Human Input
+              </div>
+              <div
+                style={{
+                  fontFamily: FONTS.mono,
+                  fontSize: '20px',
+                  lineHeight: 1.45,
+                  color: COLORS.MUTED,
+                }}
+              >
+                Copy form data → Paste into Sheets → Type confirmation emails
+              </div>
+            </div>
+          </SwissCard>
+        </StaggerItem>
+
+        <StaggerItem index={1} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <ReasonRow icon={Clock} text="Hours lost to manual copy-paste tasks" accent={COLORS.MUTED} />
+          <ReasonRow icon={AlertTriangle} text="Manual errors and missed customer leads" accent={COLORS.MUTED} />
+          <ReasonRow icon={TrendingDown} text="Process stops when you are offline" accent={COLORS.MUTED} />
+        </StaggerItem>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <StaggerItem index={2}>
+          <SwissCard
+            highlighted
+            highlightColor={COLORS.ACCENT}
+            style={{
+              height: '320px',
+              padding: '36px',
+              justifyContent: 'space-between',
+              borderWidth: '2px',
+              backgroundColor: COLORS.BG,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <MonoPill color={COLORS.BG} bg={COLORS.ACCENT} border={COLORS.ACCENT}>
+                AFTER // SYSTEM
+              </MonoPill>
+              <Workflow size={30} color={COLORS.ACCENT} />
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontFamily: FONTS.heading,
+                  fontSize: '40px',
+                  fontWeight: 800,
+                  color: COLORS.TEXT,
+                  marginBottom: '12px',
+                }}
+              >
+                n8n Pipeline
+              </div>
+              <div
+                style={{
+                  fontFamily: FONTS.mono,
+                  fontSize: '20px',
+                  lineHeight: 1.45,
+                  color: COLORS.TEXT,
+                }}
+              >
+                Send webhook data across all apps automatically
+              </div>
+            </div>
+          </SwissCard>
+        </StaggerItem>
+
+        <StaggerItem index={3} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <ReasonRow icon={Zap} text="Instant webhook execution in 0 seconds" accent={COLORS.ACCENT} />
+          <ReasonRow icon={Check} text="100% consistent data accuracy" accent={COLORS.ACCENT_2} />
+          <ReasonRow icon={TrendingUp} text="Runs 24 hours a day with no manual work" accent={COLORS.TEXT} />
+        </StaggerItem>
+      </div>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 38: Anatomy of the n8n Canvas
+const Slide38_D4CanvasAnatomy: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // THE INTERFACE"
+      tagColor={COLORS.ACCENT}
+      title="Data Moves Left to Right."
+      subtitle="Nodes, connections, and live JSON data."
+    />
+
+    <div
+      style={{
+        width: '100%',
+        height: '450px',
+        padding: '48px',
+        boxSizing: 'border-box',
+        border: `2px solid ${COLORS.TEXT}`,
+        backgroundColor: COLORS.SURFACE,
+        backgroundImage: `radial-gradient(${COLORS.MUTED} 1.25px, transparent 1.25px)`,
+        backgroundSize: '24px 24px',
+        display: 'grid',
+        gridTemplateColumns: '1fr 160px 1fr 160px 1fr',
+        alignItems: 'center',
+        gap: '12px',
+      }}
+    >
+      <StaggerItem index={0}>
+        <CanvasNodeCard
+          nodeId="NODE 01"
+          label="Webhook"
+          sub="Trigger Input"
+          accent={COLORS.ACCENT}
+          icon={Webhook}
+        />
+      </StaggerItem>
+
+      <StaggerItem index={1} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+        <div
+          style={{
+            padding: '5px 10px',
+            backgroundColor: '#16A34A',
+            color: COLORS.BG,
+            fontFamily: FONTS.mono,
+            fontSize: '12px',
+            fontWeight: 700,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          1 Item (JSON)
+        </div>
+        <ArrowRight size={36} color={COLORS.TEXT} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={2}>
+        <CanvasNodeCard
+          nodeId="NODE 02"
+          label="IF / Filter"
+          sub="Route Logic"
+          accent={COLORS.ACCENT_2}
+          icon={Filter}
+        />
+      </StaggerItem>
+
+      <StaggerItem index={3} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+        <div
+          style={{
+            padding: '5px 10px',
+            backgroundColor: '#16A34A',
+            color: COLORS.BG,
+            fontFamily: FONTS.mono,
+            fontSize: '12px',
+            fontWeight: 700,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          1 Item Passed
+        </div>
+        <ArrowRight size={36} color={COLORS.TEXT} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={4}>
+        <CanvasNodeCard
+          nodeId="NODE 03"
+          label="Google Sheets"
+          sub="Append Row"
+          accent={COLORS.TEXT}
+          icon={Table}
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+function AutomationExampleRow({
+  tag,
+  title,
+  accent,
+  step1,
+  step2,
+  step3,
+}: {
+  tag: string;
+  title: string;
+  accent: string;
+  step1: { id: ServiceId; label: string };
+  step2: { id: ServiceId; label: string };
+  step3: { id: ServiceId; label: string };
+}) {
+  return (
+    <SwissCard
+      style={{
+        width: '100%',
+        padding: '28px 36px',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderLeft: `8px solid ${accent}`,
+        gap: '32px',
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '420px' }}>
+        <MonoPill color={accent} bg={COLORS.BG} border={accent}>
+          {tag}
+        </MonoPill>
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '32px',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+            color: COLORS.TEXT,
+          }}
+        >
+          {title}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <ServiceChip id={step1.id} label={step1.label} />
+        <ArrowRight size={24} color={accent} strokeWidth={2.5} />
+        <ServiceChip id={step2.id} label={step2.label} />
+        <ArrowRight size={24} color={accent} strokeWidth={2.5} />
+        <ServiceChip id={step3.id} label={step3.label} />
+      </div>
+    </SwissCard>
+  );
+}
+
+// Slide 38B: 3 Real Automation Examples
+const Slide38B_D4Examples: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // REAL EXAMPLES"
+      tagColor={COLORS.ACCENT}
+      title="Three Common Automation Examples."
+      subtitle="Three daily workflows that run automatically."
+    />
+
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '22px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <AutomationExampleRow
+          tag="01 // E-COMMERCE"
+          title="Order → Sheet → Email"
+          accent={COLORS.ACCENT}
+          step1={{ id: 'shopify', label: 'New Order' }}
+          step2={{ id: 'sheets', label: 'Save Row' }}
+          step3={{ id: 'gmail', label: 'Send Receipt' }}
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <AutomationExampleRow
+          tag="02 // LEAD ROUTING"
+          title="Form → Filter → Slack"
+          accent={COLORS.ACCENT_2}
+          step1={{ id: 'typeform', label: 'Contact Form' }}
+          step2={{ id: 'n8n', label: 'Filter Lead' }}
+          step3={{ id: 'slack', label: 'Alert Sales' }}
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <AutomationExampleRow
+          tag="03 // REPORTING"
+          title="Schedule → Metrics → Summary"
+          accent={COLORS.TEXT}
+          step1={{ id: 'cron', label: '9 AM Trigger' }}
+          step2={{ id: 'stripe', label: 'Get Revenue' }}
+          step3={{ id: 'telegram', label: 'Send Summary' }}
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 39: The Universal Automation Formula
+const Slide39_D4Formula: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // MENTAL MODEL"
+      tagColor={COLORS.ACCENT}
+      title="Every Workflow Has 3 Parts."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 64px 1fr 64px 1fr',
+        alignItems: 'center',
+        gap: '12px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <FormulaPillarCard
+          num="01"
+          title="Trigger"
+          role="Start Event"
+          bg={COLORS.ACCENT}
+          icon={Zap}
+        />
+      </StaggerItem>
+      <StaggerItem index={1} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={44} color={COLORS.TEXT} strokeWidth={2.5} />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <FormulaPillarCard
+          num="02"
+          title="Logic"
+          role="Decision Rules"
+          bg={COLORS.ACCENT_2}
+          icon={Cpu}
+        />
+      </StaggerItem>
+      <StaggerItem index={3} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={44} color={COLORS.TEXT} strokeWidth={2.5} />
+      </StaggerItem>
+      <StaggerItem index={4}>
+        <FormulaPillarCard
+          num="03"
+          title="Action"
+          role="Final Output"
+          bg={COLORS.TEXT}
+          icon={Send}
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 40: Part 1: Triggers (The Spark)
+const Slide40_D4Triggers: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // TRIGGERS"
+      tagColor={COLORS.ACCENT}
+      title="How a Workflow Starts."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: '24px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <TriggerNodeCard
+          num="01"
+          title="Schedule / Cron"
+          sub="Every Day @ 9AM"
+          services={
+            <>
+              <ServiceChip id="cron" label="n8n Cron" />
+              <ServiceChip id="calendar" label="Google Calendar" />
+            </>
+          }
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <TriggerNodeCard
+          num="02"
+          title="Webhook / API"
+          sub="Instant HTTP POST"
+          services={
+            <>
+              <ServiceChip id="webhook" label="Webhook" />
+              <ServiceChip id="stripe" label="Stripe" />
+              <ServiceChip id="shopify" label="Shopify" />
+              <ServiceChip id="github" label="GitHub" />
+            </>
+          }
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <TriggerNodeCard
+          num="03"
+          title="Form Submission"
+          sub="Website Pre-Order"
+          services={
+            <>
+              <ServiceChip id="typeform" label="Typeform" />
+              <ServiceChip id="sheets" label="Google Forms" />
+              <ServiceChip id="n8n" label="n8n Form" />
+            </>
+          }
+        />
+      </StaggerItem>
+      <StaggerItem index={3}>
+        <TriggerNodeCard
+          num="04"
+          title="App Event"
+          sub="New Message / Email"
+          services={
+            <>
+              <ServiceChip id="gmail" label="Gmail" />
+              <ServiceChip id="slack" label="Slack" />
+              <ServiceChip id="telegram" label="Telegram" />
+            </>
+          }
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 41: Part 2: Logic (The Brain)
+const Slide41_D4Logic: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // LOGIC"
+      tagColor={COLORS.ACCENT}
+      title="Filter, Route, and Transform Data."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 64px 1.25fr 64px 1.15fr',
+        alignItems: 'center',
+        gap: '12px',
+        width: '100%',
+        padding: '40px',
+        backgroundColor: COLORS.SURFACE,
+        border: `1px solid ${COLORS.BORDER}`,
+        boxSizing: 'border-box',
+      }}
+    >
+      <StaggerItem index={0} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <FlowNodeBox num="INPUT" title="Incoming Payload" sub="JSON Object" accent={COLORS.TEXT} />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <ServiceChip id="stripe" label="Stripe" />
+          <ServiceChip id="shopify" label="Shopify" />
+          <ServiceChip id="typeform" label="Typeform" />
+        </div>
+      </StaggerItem>
+
+      <StaggerItem index={1} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={36} color={COLORS.TEXT} strokeWidth={2.25} />
+      </StaggerItem>
+
+      <StaggerItem index={1} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <FlowNodeBox
+          num="ROUTER"
+          title="IF / Switch / Code"
+          sub="Evaluate & Transform"
+          accent={COLORS.ACCENT_2}
+          bg={COLORS.BG}
+        />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <ServiceChip id="n8n" label="n8n IF" />
+          <ServiceChip id="n8n" label="Switch" />
+          <ServiceChip id="n8n" label="Set Fields" />
+          <ServiceChip id="github" label="Code (JS)" />
+        </div>
+      </StaggerItem>
+
+      <StaggerItem index={2} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '90px' }}>
+        <ArrowRight size={34} color={COLORS.ACCENT_2} strokeWidth={2.5} />
+        <ArrowRight size={34} color={COLORS.MUTED} strokeWidth={2.5} />
+      </StaggerItem>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <StaggerItem index={2} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <FlowNodeBox
+            num="TRUE PATH"
+            title="High-Priority Route"
+            sub="Condition Met"
+            accent={COLORS.ACCENT_2}
+            bg={COLORS.ACCENT_2}
+            textColor={COLORS.BG}
+          />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <ServiceChip id="slack" label="Slack" />
+            <ServiceChip id="telegram" label="Telegram" />
+          </div>
+        </StaggerItem>
+        <StaggerItem index={3} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <FlowNodeBox
+            num="FALSE PATH"
+            title="Standard Route"
+            sub="Fallback Action"
+            accent={COLORS.MUTED}
+            bg={COLORS.BG}
+            textColor={COLORS.MUTED}
+          />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <ServiceChip id="gmail" label="Gmail" />
+            <ServiceChip id="sheets" label="Sheets" />
+          </div>
+        </StaggerItem>
+      </div>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 42: Part 3: Actions & Sinks (The Destination)
+const Slide42_D4Actions: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // ACTIONS"
+      tagColor={COLORS.ACCENT}
+      title="Where Data Is Saved and Sent."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: '24px',
+        width: '100%',
+      }}
+    >
+      <StaggerItem index={0}>
+        <ActionSinkCard
+          category="Spreadsheets & DB"
+          action="Log & Sync Rows"
+          accent={COLORS.ACCENT_2}
+          services={
+            <>
+              <ServiceChip id="sheets" label="Google Sheets" />
+              <ServiceChip id="airtable" label="Airtable" />
+              <ServiceChip id="supabase" label="Supabase" />
+            </>
+          }
+        />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <ActionSinkCard
+          category="Email & Outreach"
+          action="Send Replies"
+          accent={COLORS.ACCENT}
+          services={
+            <>
+              <ServiceChip id="gmail" label="Gmail" />
+              <ServiceChip id="stripe" label="Invoices" />
+              <ServiceChip id="calendar" label="Calendar" />
+            </>
+          }
+        />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <ActionSinkCard
+          category="Team & Community"
+          action="Instant Alerts"
+          accent={COLORS.TEXT}
+          services={
+            <>
+              <ServiceChip id="slack" label="Slack" />
+              <ServiceChip id="telegram" label="Telegram" />
+              <ServiceChip id="discord" label="Discord" />
+            </>
+          }
+        />
+      </StaggerItem>
+      <StaggerItem index={3}>
+        <ActionSinkCard
+          category="CRM & Workspace"
+          action="Update Records"
+          accent={COLORS.MUTED}
+          services={
+            <>
+              <ServiceChip id="notion" label="Notion" />
+              <ServiceChip id="hubspot" label="HubSpot" />
+              <ServiceChip id="github" label="GitHub" />
+            </>
+          }
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 43: How Nodes Talk: Drag-and-Drop Variables
+const Slide43_D4DataMapping: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // DATA MAPPING"
+      tagColor={COLORS.ACCENT}
+      title="Output of Node 1 = Input of Node 2."
+      subtitle="Each JSON field is a reusable data block."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 90px 1.1fr',
+        alignItems: 'center',
+        gap: '16px',
+        width: '100%',
+      }}
+    >
+      {/* Left: Trigger Output JSON */}
+      <StaggerItem index={0}>
+        <SwissCard
+          style={{
+            height: '380px',
+            padding: '36px',
+            justifyContent: 'space-between',
+            backgroundColor: COLORS.TEXT,
+            color: COLORS.BG,
+          }}
+        >
+          <MonoPill color={COLORS.BG} bg="transparent" border="#3F3F46">
+            TRIGGER OUTPUT JSON
+          </MonoPill>
+          <pre
+            style={{
+              margin: 0,
+              fontFamily: FONTS.mono,
+              fontSize: '24px',
+              lineHeight: 1.6,
+              color: '#EAE6DF',
+            }}
+          >
+            {`{\n  "name": "Eyad",\n  "item": "Mirage Hoodie",\n  "vip": true\n}`}
+          </pre>
+        </SwissCard>
+      </StaggerItem>
+
+      <StaggerItem index={1} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={44} color={COLORS.ACCENT} strokeWidth={2.5} />
+      </StaggerItem>
+
+      {/* Right: Email Node Template */}
+      <StaggerItem index={2}>
+        <SwissCard
+          highlighted
+          highlightColor={COLORS.ACCENT_2}
+          style={{
+            height: '380px',
+            padding: '36px',
+            justifyContent: 'space-between',
+            backgroundColor: COLORS.BG,
+            borderWidth: '2px',
+          }}
+        >
+        <MonoPill color={COLORS.ACCENT_2} bg={COLORS.SURFACE} border={COLORS.ACCENT_2}>
+          EMAIL NODE TEMPLATE
+        </MonoPill>
+
+        <div
+          style={{
+            fontFamily: FONTS.heading,
+            fontSize: '34px',
+            fontWeight: 700,
+            lineHeight: 1.6,
+            color: COLORS.TEXT,
+          }}
+        >
+          <span>“Hello </span>
+          <span
+            style={{
+              padding: '4px 12px',
+              backgroundColor: COLORS.ACCENT_2,
+              color: COLORS.BG,
+              fontFamily: FONTS.mono,
+              fontSize: '26px',
+            }}
+          >
+            {'{{ $json.name }}'}
+          </span>
+          <span>, your </span>
+          <span
+            style={{
+              padding: '4px 12px',
+              backgroundColor: COLORS.ACCENT,
+              color: COLORS.BG,
+              fontFamily: FONTS.mono,
+              fontSize: '26px',
+            }}
+          >
+            {'{{ $json.item }}'}
+          </span>
+          <span> is reserved.”</span>
+        </div>
+      </SwissCard>
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 44: Workflow 1: The Linear Pipeline
+const Slide44_D4Workflow1: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // BUILD 01 (SIMPLE)"
+      tagColor={COLORS.ACCENT}
+      title="Receive the Order. Save the Lead."
+      subtitle="Connect your Day 3 Lovable store to a live spreadsheet."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 220px 1fr',
+        alignItems: 'center',
+        gap: '24px',
+        width: '100%',
+        padding: '56px',
+        backgroundColor: COLORS.SURFACE,
+        border: `1px solid ${COLORS.BORDER}`,
+        boxSizing: 'border-box',
+      }}
+    >
+      <StaggerItem index={0}>
+        <FlowNodeBox
+          num="01 // TRIGGER"
+          title="Day 3 Website Order"
+          sub="Webhook / Form Trigger"
+          accent={COLORS.ACCENT}
+          bg={COLORS.BG}
+        />
+      </StaggerItem>
+
+      <StaggerItem index={1} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+        <MonoPill color={COLORS.BG} bg={COLORS.TEXT} border={COLORS.TEXT}>
+          LIVE DATA →
+        </MonoPill>
+        <ArrowRight size={44} color={COLORS.ACCENT} strokeWidth={2.5} />
+      </StaggerItem>
+
+      <StaggerItem index={2}>
+        <FlowNodeBox
+          num="02 // ACTION"
+          title="Add Customer Row"
+          sub="Google Sheets"
+          accent={COLORS.ACCENT_2}
+          bg={COLORS.BG}
+        />
+      </StaggerItem>
+    </div>
+  </SlideContainer>
+);
+
+// Slide 45: Workflow 2: The Branching Pipeline
+const Slide45_D4Workflow2: Page = () => (
+  <SlideContainer>
+    <SlideHeader
+      tag="DAY 04 // BUILD 02 (MULTI-STEP)"
+      tagColor={COLORS.ACCENT}
+      title="Route Orders with Conditional Logic."
+    />
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 48px 1fr 48px 1fr 56px 1.15fr',
+        alignItems: 'center',
+        gap: '8px',
+        width: '100%',
+        padding: '36px',
+        backgroundColor: COLORS.SURFACE,
+        border: `1px solid ${COLORS.BORDER}`,
+        boxSizing: 'border-box',
+      }}
+    >
+      <StaggerItem index={0}>
+        <FlowNodeBox num="01" title="Form Trigger" sub="Pre-Order" accent={COLORS.TEXT} />
+      </StaggerItem>
+      <StaggerItem index={1} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={28} color={COLORS.TEXT} />
+      </StaggerItem>
+      <StaggerItem index={1}>
+        <FlowNodeBox num="02" title="Google Sheets" sub="Log Lead" accent={COLORS.TEXT} />
+      </StaggerItem>
+      <StaggerItem index={2} style={{ display: 'flex', justifyContent: 'center' }}>
+        <ArrowRight size={28} color={COLORS.TEXT} />
+      </StaggerItem>
+      <StaggerItem index={2}>
+        <FlowNodeBox
+          num="03"
+          title="IF Node"
+          sub="Order > $200?"
+          accent={COLORS.ACCENT_2}
+        />
+      </StaggerItem>
+
+      <StaggerItem index={3} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '90px' }}>
+        <ArrowRight size={32} color={COLORS.ACCENT} strokeWidth={2.5} />
+        <ArrowRight size={32} color={COLORS.ACCENT_2} strokeWidth={2.5} />
+      </StaggerItem>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <StaggerItem index={3}>
+          <FlowNodeBox
+            num="04 // TRUE"
+            title="Telegram VIP Alert"
+            sub="Instant Notification"
+            accent={COLORS.ACCENT}
+            bg={COLORS.ACCENT}
+            textColor={COLORS.BG}
+          />
+        </StaggerItem>
+        <StaggerItem index={4}>
+          <FlowNodeBox
+            num="04 // FALSE"
+            title="Confirmation Email"
+            sub="Standard Reply"
+            accent={COLORS.ACCENT_2}
+            bg={COLORS.ACCENT_2}
+            textColor={COLORS.BG}
+          />
+        </StaggerItem>
+      </div>
+    </div>
+  </SlideContainer>
+);
+
+// ===========================================================================
+// Speaker Notes & Metadata (47 Slides Total)
 // ===========================================================================
 
 export const notes: string[] = [
@@ -2038,6 +5788,81 @@ export const notes: string[] = [
 
   // 22: Vocabulary Multi-Domain
   'Technical domain vocabulary across fashion, software architecture, and cinematography unlocks exact results. Professional terms eliminate generic output.',
+
+  // 23: Day 3 Topic Roadmap
+  'Welcome to Day 3: AI Creation Studio. Today, connect an LLM, Image AI, and Lovable to build a live brand.',
+
+  // 24: Day 3 Pipeline
+  'In 60 minutes, connect four AI tools in sequence to build a complete fashion brand.',
+
+  // 25: Day 3 Free Stack
+  'All tools today have free tiers: Google Gemini for strategy, Leonardo AI for garment images, and Lovable.dev for web UI.',
+
+  // 26: Brand Identity Bible (RIMAL KINETIC)
+  'Step 1 creates a complete Brand Identity in one prompt: RIMAL KINETIC, slogan Ancient script. Future streets., exact HEX colors, Syne and Space Mono fonts, and target persona.',
+
+  // 27: Brand Voice & Tone
+  'Define three voice rules before you write copy: Prophetic, Visceral, and Minimalist. Keep product text and social posts consistent.',
+
+  // 28: Reference-Guided Generation
+  'Do not generate garment images from text alone. Send a clean reference photo to Leonardo AI and add your brand prompt.',
+
+  // 29: 3-Piece Capsule Collection
+  'Focus the first collection on three matching items: Nomad Script Boxy Shirt at $185, Mirage Heavyweight Hoodie at $245, and Kinetic Calligraphy Crewneck at $210.',
+
+  // 30: Viral Social Launch Assets
+  'Use your approved images for launch posts: show the collection copy on the left and the main product image on the right.',
+
+  // 31: Meta-Prompting
+  'Do not spend your five daily Lovable credits typing prompts manually. Send your brand, product, and social specs to Google Gemini to write one master prompt.',
+
+  // 32: Master Prompt Anatomy
+  'Include four blocks in one master Lovable prompt: design tokens, hero section, 3-item product grid with a waitlist modal, and attached product images.',
+
+  // 33: Live 1-Shot Lovable Output
+  'This is the RIMAL KINETIC storefront built from one master prompt. Generation stopped at the free-tier credit limit.',
+
+  // 34: Bridge to Day 4
+  'Build the storefront and Reserve Now button today. Connect that button to an n8n webhook tomorrow on Day 4.',
+
+  // 35: Publish App & Share to Social Media
+  'Select Publish in Lovable to deploy your storefront. Copy the live URL and add it to your social posts.',
+
+  // 36: Day 4 Topic Roadmap
+  'Welcome to Day 4: Automation Foundations with n8n. Today, build the backend workflows for your storefront.',
+
+  // 37: Day 4 Blueprint
+  'Today covers three modules: the n8n canvas and UI, the Trigger-Logic-Action model, and live multi-step workflows.',
+
+  // 38: Manual vs Automation
+  'Do not copy form data into spreadsheets and emails manually. An n8n workflow sends data across all apps automatically.',
+
+  // 39: Anatomy of the n8n Canvas
+  'On the n8n canvas, data moves from left to right between nodes as structured JSON objects.',
+
+  // 40: 3 Real Automation Examples
+  'Review three common automations: e-commerce order logging, lead routing to Slack, and scheduled daily revenue summaries.',
+
+  // 41: Universal Automation Formula
+  'Every workflow has three parts: a Trigger event, Logic rules, and an Action output.',
+
+  // 42: Part 1: Triggers
+  'Workflows start from four triggers: a Cron schedule, a Webhook request, a form submission, or an app event.',
+
+  // 43: Part 2: Logic
+  'Logic nodes such as IF and Switch check JSON fields and route data down True or False paths.',
+
+  // 44: Part 3: Actions & Sinks
+  'Action nodes save or send data: update Google Sheets, send Gmail replies, alert Slack or Telegram, and update your CRM.',
+
+  // 45: Data Mapping
+  'Output of Node 1 becomes input of Node 2. Drag JSON fields such as $json.name and $json.item into downstream templates.',
+
+  // 46: Workflow 1 (Linear)
+  'Build Workflow 1 as a 2-node linear flow: receive the Day 3 Lovable order webhook and add a customer row in Google Sheets.',
+
+  // 47: Workflow 2 (Branching)
+  'Build Workflow 2 with an IF node: orders above $200 send a Telegram VIP alert; standard orders send a confirmation email.',
 ];
 
 export const meta: SlideMeta = {
@@ -2073,4 +5898,33 @@ export default [
   Slide20_PromptFormula,
   Slide21_Anatomy,
   Slide22_Vocabulary,
+
+  // Day 03: AI Creation Studio — Brand, Visuals, and Website
+  Slide23_D3Roadmap,
+  Slide24_D3Pipeline,
+  Slide25_D3Stack,
+  Slide26_D3BrandBible,
+  Slide26B_D3BrandVoice,
+  Slide27_D3ImageToImage,
+  Slide28_D3CapsuleDrop,
+  Slide29_D3SocialCampaign,
+  Slide30_D3MetaPrompting,
+  Slide31_D3MasterPrompt,
+  Slide31B_D3LovableOutput,
+  Slide33_D3BridgeDay4,
+  Slide34_D3PublishAndShare,
+
+  // Day 04: Automation Foundations with n8n
+  Slide35_D4Roadmap,
+  Slide36_D4Blueprint,
+  Slide37_D4ManualVsAuto,
+  Slide38_D4CanvasAnatomy,
+  Slide38B_D4Examples,
+  Slide39_D4Formula,
+  Slide40_D4Triggers,
+  Slide41_D4Logic,
+  Slide42_D4Actions,
+  Slide43_D4DataMapping,
+  Slide44_D4Workflow1,
+  Slide45_D4Workflow2,
 ] satisfies Page[];
