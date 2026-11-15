@@ -4,7 +4,32 @@ import type {
   SlideMeta,
   SlideTransition,
 } from "@open-slide/core";
-import { ImagePlaceholder, useIsActivePage } from "@open-slide/core";
+import { useIsActivePage } from "@open-slide/core";
+import imgOc1 from "./assets/OC 1.jpg";
+import imgAiGen1 from "./assets/AI generated 1.jpg";
+import imgProduct1 from "./assets/product 1.jpg";
+import imgProduct2 from "./assets/product 2.jpg";
+import imgProduct3 from "./assets/product 3.jpg";
+import imgInstructor from "./assets/instructor.jpeg";
+import imgSamAltman from "./assets/sam altman.webp";
+import imgJensenHuang from "./assets/jensen huang.jpg";
+import imgDarioAmodei from "./assets/dario.jpg";
+import imgSundarPichai from "./assets/sundar pichai.webp";
+import imgGpuCluster from "./assets/nvidia gpu cluster data center.jpg";
+import imgCapexTrend from "./assets/hyperscaler-capex-trend.png";
+import imgAssetCreation from "./assets/asset creation.jpg";
+import imgCommercialStudio from "./assets/commercial studio.jpg";
+import imgWebApp from "./assets/web application.png";
+import imgCostReduction from "./assets/cost reduction.webp";
+import imgN8nWorkflow from "./assets/n8n workflow.jpg";
+import imgN8nSupport from "./assets/n8n customer support.png";
+import imgHallucination1 from "./assets/hullucination 1.png";
+import imgHallucination2 from "./assets/hullucination 2.webp";
+import imgHallucination3 from "./assets/hullucination 3.png";
+import imgSocialMedia from "./assets/social media.png";
+import imgOrderReceipts from "./assets/order receipts.png";
+import imgContactForm from "./assets/contact form.png";
+import imgRevenueMetrics from "./assets/revenue metrics.jpeg";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -422,7 +447,11 @@ const Slide0_Instructor: Page = () => (
             display: "flex",
           }}
         >
-          <ImagePlaceholder hint="Instructor portrait" />
+          <img
+            src={imgInstructor}
+            alt="Eyad ALsherif"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
         </div>
       </StaggerItem>
 
@@ -663,10 +692,10 @@ const Slide2_Deliverables: Page = () => {
               style={{ height: "100%", justifyContent: "space-between" }}
             >
               <Maximize2 size={28} color={COLORS.ACCENT} />
-              <ImagePlaceholderBox
-                title="STUDIO ASSET"
-                subtitle="4K EDITORIAL"
-                height={220}
+              <img
+                src={imgCommercialStudio}
+                alt="Commercial Studio"
+                style={{ width: "100%", height: "220px", objectFit: "contain", backgroundColor: COLORS.BG, border: `1px solid ${COLORS.BORDER}` }}
               />
               <div>
                 <h4
@@ -697,10 +726,10 @@ const Slide2_Deliverables: Page = () => {
               style={{ height: "100%", justifyContent: "space-between" }}
             >
               <Layout size={28} color={COLORS.ACCENT_2} />
-              <ImagePlaceholderBox
-                title="LOVABLE WEB APP"
-                subtitle="WEBSITE UI MOCKUP"
-                height={220}
+              <img
+                src={imgWebApp}
+                alt="Web Application"
+                style={{ width: "100%", height: "220px", objectFit: "contain", backgroundColor: COLORS.BG, border: `1px solid ${COLORS.BORDER}` }}
               />
               <div>
                 <h4
@@ -1113,10 +1142,10 @@ const Slide5_D1Outcomes: Page = () => {
 // Slide 6: Industry Leaders
 const Slide6_Leaders: Page = () => {
   const leaders = [
-    { name: "Sam Altman", org: "OpenAI", desc: "Frontier models" },
-    { name: "Jensen Huang", org: "NVIDIA", desc: "Compute hardware" },
-    { name: "Dario Amodei", org: "Anthropic", desc: "AI safety & code" },
-    { name: "Sundar Pichai", org: "Google", desc: "Global AI ecosystem" },
+    { name: "Sam Altman", org: "OpenAI", desc: "Frontier models", img: imgSamAltman },
+    { name: "Jensen Huang", org: "NVIDIA", desc: "Compute hardware", img: imgJensenHuang },
+    { name: "Dario Amodei", org: "Anthropic", desc: "AI safety & code", img: imgDarioAmodei },
+    { name: "Sundar Pichai", org: "Google", desc: "Global AI ecosystem", img: imgSundarPichai },
   ];
 
   return (
@@ -1151,10 +1180,10 @@ const Slide6_Leaders: Page = () => {
                 }}
               >
                 <MonoPill>{p.org}</MonoPill>
-                <ImagePlaceholderBox
-                  title={p.name.toUpperCase()}
-                  subtitle="PORTRAIT"
-                  height={240}
+                <img
+                  src={p.img}
+                  alt={p.name}
+                  style={{ width: "100%", height: "240px", objectFit: "cover", border: `1px solid ${COLORS.BORDER}` }}
                 />
                 <div>
                   <h3
@@ -1452,31 +1481,28 @@ const Slide7_PhysicalScale: Page = () => {
           style={{
             display: "flex",
             flexDirection: "column",
+            justifyContent: "center",
             gap: "24px",
             height: "100%",
           }}
         >
           <div
-            style={{
-              display: "flex",
-              flex: 1,
-              overflow: "hidden",
-              border: `1px solid ${COLORS.BORDER}`,
-              backgroundColor: COLORS.SURFACE,
-            }}
+            style={{ display: "flex", height: '299.05px', overflow: "hidden", border: `1px solid ${COLORS.BORDER}`, backgroundColor: COLORS.SURFACE, minWidth: '0px', minHeight: '0px', maxWidth: 'none', maxHeight: 'none', flexShrink: '0', flexGrow: '0', flexBasis: 'auto', width: '557.35px', translate: '0px -10.68px' }}
           >
-            <ImagePlaceholder hint="NVIDIA GPU cluster or AI data center server rack" />
+            <img
+              src={imgGpuCluster}
+              alt="NVIDIA GPU cluster data center"
+              style={{ width: '555.98px', height: '348.36px', objectFit: 'contain', objectPosition: '50% 50%', minWidth: '0px', minHeight: '0px', maxWidth: 'none', maxHeight: 'none', flexShrink: '0', flexGrow: '0', flexBasis: 'auto', translate: '0px -11.51px' }}
+            />
           </div>
           <div
-            style={{
-              display: "flex",
-              flex: 1,
-              overflow: "hidden",
-              border: `1px solid ${COLORS.BORDER}`,
-              backgroundColor: COLORS.SURFACE,
-            }}
+            style={{ display: "flex", height: '263.73px', overflow: "hidden", border: `1px solid ${COLORS.BORDER}`, backgroundColor: COLORS.BG, minWidth: '0px', minHeight: '0px', maxWidth: 'none', maxHeight: 'none', flexShrink: '0', flexGrow: '0', flexBasis: 'auto', width: '557.35px', translate: '0.68px -17.94px' }}
           >
-            <ImagePlaceholder hint="AI infrastructure capital spending chart or hyperscaler facility" />
+            <img
+              src={imgCapexTrend}
+              alt="Hyperscaler AI capex trend"
+              style={{ width: '641.26px', height: '373.83px', objectFit: "contain", minWidth: '0px', minHeight: '0px', maxWidth: 'none', maxHeight: 'none', flexShrink: '0', flexGrow: '0', flexBasis: 'auto', translate: '-43.31px -45.86px' }}
+            />
           </div>
         </div>
       </div>
@@ -2307,32 +2333,28 @@ const Slide10_RevenueModels: Page = () => {
       title: "Service Arbitrage",
       desc: "Deliver client services 10x faster with AI workflows.",
       icon: Zap,
-      imgTitle: "SERVICE ASSET",
-      imgSub: "FREELANCE DELIVERABLE",
+      img: imgAssetCreation,
     },
     {
       num: "02",
       title: "B2B Automation",
       desc: "Build and sell n8n customer pipelines to SMB clients.",
       icon: Workflow,
-      imgTitle: "N8N WORKFLOW",
-      imgSub: "AUTOMATION BLUEPRINT",
+      img: imgN8nSupport,
     },
     {
       num: "03",
       title: "Cost Reduction",
       desc: "Replace multi-seat vendor expenses with custom internal nodes.",
       icon: TrendingDown,
-      imgTitle: "ENTERPRISE OPS",
-      imgSub: "INTERNAL EFFICIENCY",
+      img: imgCostReduction,
     },
     {
       num: "04",
       title: "Digital Micro-Assets",
       desc: "Deploy niche tools & content engines with near-$0 marginal cost.",
       icon: Package,
-      imgTitle: "MICRO SAAS",
-      imgSub: "PROGRAMMATIC ENGINE",
+      img: imgAssetCreation,
     },
   ];
 
@@ -2424,10 +2446,10 @@ const Slide10_RevenueModels: Page = () => {
                     </p>
                   </div>
 
-                  <ImagePlaceholderBox
-                    title={m.imgTitle}
-                    subtitle={m.imgSub}
-                    height={160}
+                  <img
+                    src={m.img}
+                    alt={m.title}
+                    style={{ width: "100%", height: "160px", objectFit: "cover", border: `1px solid ${COLORS.BORDER}` }}
                   />
                 </div>
               </Step>
@@ -2668,10 +2690,10 @@ const Slide12_LiveDemo: Page = () => {
               >
                 01 // BRAND STUDIO
               </span>
-              <ImagePlaceholderBox
-                title="STUDIO ASSET"
-                subtitle="DEMO SCREEN 01"
-                height={320}
+              <img
+                src={imgCommercialStudio}
+                alt="Brand Studio"
+                style={{ width: "100%", height: "320px", objectFit: "contain", backgroundColor: COLORS.BG, border: `1px solid ${COLORS.BORDER}` }}
               />
               <span
                 style={{
@@ -2706,10 +2728,10 @@ const Slide12_LiveDemo: Page = () => {
               >
                 02 // LOVABLE APP
               </span>
-              <ImagePlaceholderBox
-                title="LOVABLE WEB APP"
-                subtitle="DEMO SCREEN 02"
-                height={320}
+              <img
+                src={imgWebApp}
+                alt="Lovable Web App"
+                style={{ width: "100%", height: "320px", objectFit: "contain", backgroundColor: COLORS.BG, border: `1px solid ${COLORS.BORDER}` }}
               />
               <span
                 style={{
@@ -2744,11 +2766,10 @@ const Slide12_LiveDemo: Page = () => {
               >
                 03 // N8N WORKFLOW
               </span>
-              <ImagePlaceholderBox
-                title="N8N PIPELINE"
-                subtitle="DEMO SCREEN 03"
-                height={320}
-                accent
+              <img
+                src={imgN8nWorkflow}
+                alt="n8n Pipeline"
+                style={{ width: "100%", height: "320px", objectFit: "contain", backgroundColor: COLORS.BG, border: `1px solid ${COLORS.ACCENT}` }}
               />
               <span
                 style={{
@@ -3863,12 +3884,12 @@ function HallucinationRiskCard({
   index,
   title,
   desc,
-  hint,
+  img,
 }: {
   index: string;
   title: string;
   desc: string;
-  hint: string;
+  img: string;
 }) {
   return (
     <div
@@ -3878,23 +3899,23 @@ function HallucinationRiskCard({
         borderTop: `3px solid ${COLORS.ACCENT}`,
         padding: "24px",
         height: "520px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-        boxSizing: "border-box",
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        boxSizing: 'border-box',
       }}
     >
       <div
         style={{
-          display: "flex",
-          height: "250px",
-          overflow: "hidden",
+          display: 'flex',
+          height: '250px',
+          overflow: 'hidden',
           border: `1px solid ${COLORS.BORDER}`,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: '#FFFFFF',
           flexShrink: 0,
         }}
       >
-        <ImagePlaceholder hint={hint} />
+        <img src={img} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
       <div
@@ -3978,7 +3999,7 @@ const Slide18_Hallucinations: Page = () => {
               index="01"
               title="Fake Court Cases"
               desc="Models invent legal precedents, judges, and docket numbers."
-              hint="AI hallucinated legal brief or fake court citation"
+              img={imgHallucination2}
             />
           </Step>
           <Step>
@@ -3986,7 +4007,7 @@ const Slide18_Hallucinations: Page = () => {
               index="02"
               title="Phantom Software APIs"
               desc="Models invent Python functions and parameters that do not exist."
-              hint="Code editor showing non-existent software API error"
+              img={imgHallucination1}
             />
           </Step>
           <Step>
@@ -3994,7 +4015,7 @@ const Slide18_Hallucinations: Page = () => {
               index="03"
               title="False Biography Facts"
               desc="Models invent dates, company awards, and past publications."
-              hint="Fact-checked biography with highlighted false claims"
+              img={imgHallucination3}
             />
           </Step>
         </Steps>
@@ -5667,12 +5688,12 @@ function CapsuleLookbookCard({
   num,
   name,
   price,
-  hint,
+  img,
 }: {
   num: string;
   name: string;
   price: string;
-  hint: string;
+  img: string;
 }) {
   return (
     <div
@@ -5714,7 +5735,11 @@ function CapsuleLookbookCard({
         >
           DROP // {num}
         </div>
-        <ImagePlaceholder hint={hint} />
+        <img
+          src={img}
+          alt={name}
+          style={{ width: "100%", height: "100%", objectFit: 'cover', objectPosition: '50% 50%', objectViewBox: 'inset(0% 0% 17.1% 0%)' }}
+        />
       </div>
 
       <div
@@ -6404,19 +6429,21 @@ const Slide27_D3ImageToImage: Page = () => (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 240px 1fr",
-        alignItems: "center",
-        gap: "24px",
+        gridTemplateColumns: "1fr 220px 1fr",
+        alignItems: "stretch",
+        gap: "20px",
         width: "100%",
+        flex: 1,
+        minHeight: 0,
       }}
     >
-      <StaggerItem index={0}>
+      <StaggerItem index={0} style={{ height: "100%", minHeight: 0 }}>
         <SwissCard
           style={{
-            height: "470px",
+            height: "100%",
             justifyContent: "space-between",
             borderColor: COLORS.MUTED,
-            padding: "36px",
+            padding: "24px",
           }}
         >
           <div
@@ -6444,18 +6471,23 @@ const Slide27_D3ImageToImage: Page = () => (
             style={{
               display: "flex",
               flex: 1,
-              margin: "20px 0",
+              minHeight: 0,
+              margin: "12px 0",
               overflow: "hidden",
               border: `1px solid ${COLORS.BORDER}`,
             }}
           >
-            <ImagePlaceholder hint="Plain oversized hoodie flat-lay web reference" />
+            <img
+              src={imgOc1}
+              alt="OC reference garment"
+              style={{ width: "100%", height: "100%", objectFit: "contain", backgroundColor: COLORS.BG }}
+            />
           </div>
 
           <div
             style={{
               fontFamily: FONTS.heading,
-              fontSize: "28px",
+              fontSize: "26px",
               fontWeight: 700,
               color: COLORS.MUTED,
               textAlign: "center",
@@ -6472,6 +6504,7 @@ const Slide27_D3ImageToImage: Page = () => (
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          alignSelf: "center",
           gap: "16px",
         }}
       >
@@ -6485,6 +6518,7 @@ const Slide27_D3ImageToImage: Page = () => (
             fontWeight: 700,
             letterSpacing: "0.06em",
             textAlign: "center",
+            whiteSpace: "nowrap",
           }}
         >
           + BRAND PROMPT
@@ -6492,15 +6526,15 @@ const Slide27_D3ImageToImage: Page = () => (
         <ArrowRight size={48} color={COLORS.ACCENT} strokeWidth={2.25} />
       </StaggerItem>
 
-      <StaggerItem index={2}>
+      <StaggerItem index={2} style={{ height: "100%", minHeight: 0 }}>
         <SwissCard
           highlighted
           highlightColor={COLORS.ACCENT}
           style={{
-            height: "470px",
+            height: "100%",
             justifyContent: "space-between",
             borderWidth: "2px",
-            padding: "36px",
+            padding: "24px",
           }}
         >
           <div
@@ -6532,18 +6566,23 @@ const Slide27_D3ImageToImage: Page = () => (
             style={{
               display: "flex",
               flex: 1,
-              margin: "20px 0",
+              minHeight: 0,
+              margin: "12px 0",
               overflow: "hidden",
               border: `1px solid ${COLORS.BORDER}`,
             }}
           >
-            <ImagePlaceholder hint="RIMAL KINETIC Mirage Heavyweight Hoodie AI editorial output" />
+            <img
+              src={imgAiGen1}
+              alt="AI generated garment"
+              style={{ width: "100%", height: "100%", objectFit: "contain", backgroundColor: COLORS.BG }}
+            />
           </div>
 
           <div
             style={{
               fontFamily: FONTS.heading,
-              fontSize: "28px",
+              fontSize: "26px",
               fontWeight: 800,
               color: COLORS.TEXT,
               textAlign: "center",
@@ -6579,7 +6618,7 @@ const Slide28_D3CapsuleDrop: Page = () => (
           num="01"
           name="Nomad Script Boxy Shirt"
           price="$185"
-          hint="Nomad Script Boxy Shirt lookbook image"
+          img={imgProduct1}
         />
       </StaggerItem>
       <StaggerItem index={1}>
@@ -6587,7 +6626,7 @@ const Slide28_D3CapsuleDrop: Page = () => (
           num="02"
           name="Mirage Heavyweight Hoodie"
           price="$245"
-          hint="Mirage Heavyweight Hoodie lookbook image"
+          img={imgProduct2}
         />
       </StaggerItem>
       <StaggerItem index={2}>
@@ -6595,7 +6634,7 @@ const Slide28_D3CapsuleDrop: Page = () => (
           num="03"
           name="Kinetic Calligraphy Crewneck"
           price="$210"
-          hint="Kinetic Calligraphy Crewneck lookbook image"
+          img={imgProduct3}
         />
       </StaggerItem>
     </div>
@@ -6738,7 +6777,11 @@ const Slide29_D3SocialCampaign: Page = () => (
           }}
         >
           <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-            <ImagePlaceholder hint="RIMAL KINETIC social launch campaign hero image" />
+            <img
+              src={imgSocialMedia}
+              alt="RIMAL KINETIC social launch campaign"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
           </div>
         </SwissCard>
       </StaggerItem>
@@ -6986,7 +7029,11 @@ const Slide31B_D3LovableOutput: Page = () => (
         </span>
       </div>
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-        <ImagePlaceholder hint="RIMAL KINETIC Lovable.dev live storefront screenshot" />
+        <img
+          src={imgWebApp}
+          alt="RIMAL KINETIC Lovable.dev live storefront"
+          style={{ width: "100%", height: "100%", objectFit: "contain", backgroundColor: COLORS.BG }}
+        />
       </div>
     </SwissCard>
   </SlideContainer>
@@ -8229,12 +8276,12 @@ function AutomationExampleColumn({
   tag,
   title,
   accent,
-  hint,
+  img,
 }: {
   tag: string;
   title: string;
   accent: string;
-  hint: string;
+  img: string;
 }) {
   return (
     <div
@@ -8287,7 +8334,11 @@ function AutomationExampleColumn({
           backgroundColor: "#FFFFFF",
         }}
       >
-        <ImagePlaceholder hint={hint} />
+        <img
+          src={img}
+          alt={title}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
       </div>
     </div>
   );
@@ -8315,7 +8366,7 @@ const Slide38B_D4Examples: Page = () => (
           tag="01 // E-COMMERCE"
           title="Order → Sheet → Email"
           accent={COLORS.ACCENT}
-          hint="E-commerce order to Google Sheet and Gmail receipt workflow"
+          img={imgOrderReceipts}
         />
       </StaggerItem>
       <StaggerItem index={1}>
@@ -8323,7 +8374,7 @@ const Slide38B_D4Examples: Page = () => (
           tag="02 // LEAD ROUTING"
           title="Form → Filter → Slack"
           accent={COLORS.ACCENT_2}
-          hint="Contact form filter to Slack sales alert workflow"
+          img={imgContactForm}
         />
       </StaggerItem>
       <StaggerItem index={2}>
@@ -8331,7 +8382,7 @@ const Slide38B_D4Examples: Page = () => (
           tag="03 // REPORTING"
           title="Schedule → Metrics → Summary"
           accent={COLORS.TEXT}
-          hint="Daily schedule Stripe revenue metrics to Telegram summary workflow"
+          img={imgRevenueMetrics}
         />
       </StaggerItem>
     </div>
